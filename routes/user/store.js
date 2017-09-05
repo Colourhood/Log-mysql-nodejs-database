@@ -20,12 +20,12 @@ function randomString() {
 function signup({ username, password }) {
     console.log(`Add user ${username}`);
 
-    const { salt, hash } = saltHashPassword(password);
+    const { salt, hash } = saltHashPassword({ password });
 
     return knex('user').insert({
+        username,
         salt,
         encrypted_password: hash,
-        password
     });
 }
 
