@@ -29,7 +29,7 @@ function checkIfUserExists(username) {
 function signup({ username, password }) {
     console.log(`Trying to create new account user ${username}`);
 
-    checkIfUserExists(username).then(({ exists }) => {
+    return checkIfUserExists(username).then(({ exists }) => {
         console.log('Does user exist? '+exists);
         if (!exists) {
             const { salt, hash } = saltHashPassword({ password });
@@ -40,11 +40,16 @@ function signup({ username, password }) {
                 username,
                 salt,
                 encrypted_password: hash,
+            }).then(() => {
+                return new Promise ((resolve, reject) => {
+                    resolve({ success: true });
+                });
             });
         }
+        return new Promise ((resolve, reject) => {
+            reject({ failure: true });
+        });
     });
-
-    return knex('user');
 }
 
 function authenticate({ username, password }) {

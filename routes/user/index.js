@@ -7,12 +7,20 @@ user.post('/signup', (request, response) => {
             username: request.body.username,
             password: request.body.password
         })
-        .then(() => { 
-            response.sendStatus(200);/*.json({username: request.body.username})*/
-            return;            
-            response.json({ 'username': request.body.username });
+        .then(({ success }) => {
+            if (success) {
+                console.log('Creating a user was a success '+success);
+                response.sendStatus(200);
+                return;
+                response.json({ 'username': request.body.username });
+            }
         })
-        .catch((error) => { console.log(error)});
+        .catch(({ failure }) => {
+            if (failure) {
+                console.log('Did this fail? '+failure);
+                response.sendStatus(401);
+            }
+        });
 });
 
 user.post('/login', (request, response) => {
