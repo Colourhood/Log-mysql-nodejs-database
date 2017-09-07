@@ -8,10 +8,6 @@ const app = express();
 // app.use(express.static('public'));
 app.use(bodyParser.json());
 app.use('/api', routes);
-// app.use((request, response, next) => {
-//     response.header('content-type', 'application/json');
-//     next();
-// });
 
 app.get('/', (request, response) => {
     response.status(200).json({ Home: 'Colourhood presents the log database project' });
