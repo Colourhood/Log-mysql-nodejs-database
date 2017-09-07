@@ -1,7 +1,6 @@
 const knex = require('knex')(require('../../knexfile'));
 const crypto = require('crypto');
 
-
 //private functions
 function saltHashPassword({ password, salt = randomString() } ) {
     const hash = crypto.createHmac('sha512', salt).update(password);
@@ -27,14 +26,9 @@ function checkIfUserExists(username) {
 //public functions/methods - exported
 
 function signup({ username, password }) {
-    console.log(`Trying to create new account user ${username}`);
-
     return checkIfUserExists(username).then(({ exists }) => {
-        console.log('Does user exist? '+exists);
         if (!exists) {
             const { salt, hash } = saltHashPassword({ password });
-    
-            console.log('Successfully adding new user');
     
             return knex('user').insert({
                 username,
@@ -53,8 +47,6 @@ function signup({ username, password }) {
 }
 
 function authenticate({ username, password }) {
-    console.log(`Authenticating for user ${username}`);
-
     return knex('user').where({ username })
           .then(([user]) => {
                 if (!user) { return ({ success: false }); }
