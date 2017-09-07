@@ -10,14 +10,13 @@ user.post('/signup', (request, response) => {
         .then(({ success }) => {
             if (success) {
                 console.log('Creating a user was a success '+success);
-                return;
                 response.status(200).json({ 'username': request.body.username });
             }
         })
         .catch(({ failure }) => {
             if (failure) {
-                console.log('Did this fail? '+failure);
-                response.sendStatus(401);
+                console.log('There was an error trying to create a user, maybe the user already exists?');
+                response.status(401).json({ 'message': 'Account already exists, please login' });
             }
         });
 });
@@ -31,9 +30,8 @@ user.post('/login', (request, response) => {
     .then(({ success }) => {
         if (success) {
             response.status(200).json({ 'username': request.body.username });
-            return;
         } else {
-            response.sendStatus(401);
+            response.status(401).json({ 'message': 'Check your email or password' });
         }
     })
 })
