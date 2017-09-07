@@ -10,9 +10,8 @@ user.post('/signup', (request, response) => {
         .then(({ success }) => {
             if (success) {
                 console.log('Creating a user was a success '+success);
-                response.sendStatus(200);
                 return;
-                response.json({ 'username': request.body.username });
+                response.status(200).json({ 'username': request.body.username });
             }
         })
         .catch(({ failure }) => {
@@ -31,7 +30,8 @@ user.post('/login', (request, response) => {
     })
     .then(({ success }) => {
         if (success) {
-            response.sendStatus(200);
+            response.status(200).json({ 'username': request.body.username });
+            return;
         } else {
             response.sendStatus(401);
         }
