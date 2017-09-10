@@ -1,7 +1,7 @@
 const messages = require('express').Router();
 const store = require('./store');
 
-messages.get('/:username/messages/', (request, response) => {
+messages.get('/messages/:username', (request, response) => {
     console.log('Get Messages endpoint was called - user: '+JSON.stringify(request.params.username));
     store.getHomeMessages({
         username: request.params.username
@@ -11,7 +11,7 @@ messages.get('/:username/messages/', (request, response) => {
     });
 });
 
-messages.get('/:username/messages&:friendname', (request, response) => {
+messages.get('/messages/:username/:friendname', (request, response) => {
     console.log('Get messages with friend');
     store.getMessagesWithFriend({
         username: request.params.username,
