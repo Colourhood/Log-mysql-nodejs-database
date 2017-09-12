@@ -6,7 +6,7 @@ messages.get('/messages/:username', (request, response) => {
     store.getHomeMessages({
         username: request.params.username
     }).then((data) => {
-        response.status(200).json({ 'message': data });
+        response.status(200).json(data);
     });
 });
 
