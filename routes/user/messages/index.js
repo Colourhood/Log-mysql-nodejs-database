@@ -1,5 +1,5 @@
 const messages = require('express').Router();
-const store = require('./store');
+const store = require('routes/user/messages/store');
 
 messages.get('/messages/:username', (request, response) => {
     console.log('Get Messages endpoint was called - user: '+JSON.stringify(request.params.username));

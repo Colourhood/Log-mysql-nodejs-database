@@ -1,4 +1,4 @@
-const knex = require('knex')(require('../../knexfile'));
+const knex = require('knex')(require('knexfile'));
 const crypto = require('crypto');
 
 //private functions

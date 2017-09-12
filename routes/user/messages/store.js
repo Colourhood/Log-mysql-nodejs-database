@@ -1,4 +1,4 @@
-const knex = require('knex')(require('../../../knexfile'));
+const knex = require('knex')(require('knexfile'));
 
 function getHomeMessages({ username }) {
     console.log('Trying to get the messages from SQL store');

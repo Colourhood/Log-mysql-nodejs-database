@@ -1,6 +1,6 @@
 const user = require('express').Router();
-const store = require('./store');
-const messages = require('./messages');
+const store = require('routes/user/store');
+const messages = require('routes/user/messages');
 
 user.post('/signup', (request, response) => {
     console.log('The POST method to create a user was called '+request.body.username);
