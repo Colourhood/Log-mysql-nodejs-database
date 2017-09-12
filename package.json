@@ -9,9 +9,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "body-parser": "^1.17.2",
+    "aws-sdk": "^2.113.0",
+    "body-parser": "^1.18.0",
     "express": "^4.15.4",
     "knex": "^0.13.0",
-    "mysql": "^2.14.1"
+    "mysql": "^2.14.1",
+    "untildify": "^3.0.2"
   }
 }
