@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const routes = require('routes');
 const app = express();
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '2mb' }));
 app.use('/api', routes);
 
 app.get('/', (request, response) => {
