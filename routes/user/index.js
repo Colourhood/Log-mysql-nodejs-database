@@ -20,7 +20,7 @@ user.post('/signup', (request, response) => {
         .catch(({ failure }) => {
             if (failure) {
                 console.log('There was an error trying to create a user, maybe the user already exists?');
-                response.status(401).json({ 'message': 'Account already exists, please login' });
+                response.status(500).json({ 'message': 'Account already exists, please login' });
             }
         });
 });
@@ -40,10 +40,10 @@ user.post('/login', (request, response) => {
             response.status(200).json({ 'username': username,
                                         'image': image });
         }).catch((error) => {
-            response.status(401).json({ 'error': error });
+            response.status(500).json({ 'error': error });
         });
     } else {
-        response.status(401).json({ 'error': 'Missing required fields' });
+        response.status(400).json({ 'error': 'Missing required fields' });
     }
 
 });
