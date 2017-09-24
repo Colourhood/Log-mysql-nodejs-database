@@ -3,21 +3,25 @@ const knex = require('knex')(require('knexfile'));
 function getHomeMessages({ username }) {
     console.log('Trying to get the messages from SQL store');
 
-    //get all the names of user's friends (friend list)
-    return knex('messages')
-          .distinct('sentTo')
-          .where({ 'sentBy': username })
+    // Process of filtering user's friends
+    return knex
+          .queryBuilder()
           .select('sentTo')
-          .map((values) => {
-              const friend = values.sentTo;
-              //Get most recent message with this friend
-              return knex('messages')
-                    .where({ 'sentBy': username, 'sentTo': friend })
-                    .orWhere({ 'sentBy': friend, 'sentTo': username })
-                    .select('sentTo', 'sentBy', 'message')
-                    .orderBy('created_at', 'desc')
-                    .limit(1)
-          });
+          .from('messages')
+          .where({ 'sentBy': username })
+          .union(function() {
+              this.select('sentBy').from('messages').where({ 'sentTo': username });
+            }).map((values) => {
+                const friend = values.sentTo;
+                // Processing of fetching most recent message conversation between friend and user
+                return knex('messages')
+                      .where({ 'sentBy': username, 'sentTo': friend })
+                      .orWhere({ 'sentBy': friend, 'sentTo': username })
+                      .select('sentTo', 'sentBy', 'message')
+                      .orderBy('created_at', 'desc')
+                      .limit(1);
+
+            });
 }
 
 function getMessagesWithFriend({ username, friendname }) {
