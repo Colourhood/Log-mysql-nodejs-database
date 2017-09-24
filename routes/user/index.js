@@ -26,13 +26,14 @@ user.post('/signup', (request, response) => {
 });
 
 user.post('/login', (request, response) => {
-    var username = request.body.username;
+    const username = request.body.username;
+    const password = request.body.password;
 
     console.log(username);
     
     if (username !== ' ' || username !== undefined) {
         const awsPromise = actions.getObject(keys.pImage, username);
-        const mySqlPromise = store.authenticate({ username: username, password: request.body.password });
+        const mySqlPromise = store.authenticate({ username: username, password: password });
 
         Promise.all([awsPromise, mySqlPromise]).then((values) => {
             console.log(values);
