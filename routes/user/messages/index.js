@@ -19,6 +19,20 @@ messages.get('/messages/:username/:friendname', (request, response) => {
         console.log(`Data from messages with friend ${data}`);
         response.status(200).json({ 'messages': data });
     });
-}); 
+});
+
+messages.put('/messages/', (request, response) => {
+    console.log('Putting new message into database');
+    const sentBy = request.body.sentBy;
+    const sentTo = request.body.sentTo;
+    const message = request.body.message;
+
+    store.storeNewMessage({ sentBy, sentTo, message })
+    .then((messageID) => {
+        console.log('ID: '+messageID);
+        response.status(204).send();;
+    });
+
+})
 
 module.exports = messages;
