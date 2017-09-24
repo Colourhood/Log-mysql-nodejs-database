@@ -31,7 +31,14 @@ function getMessagesWithFriend({ username, friendname }) {
           .select('sentBy', 'sentTo', 'message');
 }
 
+function storeNewMessage({ sentBy, sentTo, message }) {
+    console.log(`Sent by: ${sentBy}\ Sent to: ${sentTo}\n Message: ${message}`);
+
+    return knex('messages').insert({ sentBy, sentTo, message });
+}
+
 module.exports = {
     getHomeMessages,
-    getMessagesWithFriend
+    getMessagesWithFriend,
+    storeNewMessage
 }
