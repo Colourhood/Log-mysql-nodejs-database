@@ -10,8 +10,8 @@ function listAllObjects() {
     });
 }
 
-function getObject(key) {
-    return S3.getObject({ Key: key }).promise().then((data) => {
+function getObject(predef, key) {
+    return S3.getObject({ Key: predef+key }).promise().then((data) => {
         return new Promise((resolve, reject) => {
             resolve(data);
         });

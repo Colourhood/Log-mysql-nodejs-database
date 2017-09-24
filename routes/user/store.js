@@ -35,12 +35,12 @@ function signup({ username, password }) {
                 salt,
                 encrypted_password: hash,
             }).then(() => {
-                return new Promise ((resolve, reject) => {
+                return new Promise((resolve, reject) => {
                     resolve({ success: true });
                 });
             });
         }
-        return new Promise ((resolve, reject) => {
+        return new Promise((resolve, reject) => {
             reject({ failure: true });
         });
     });
@@ -49,12 +49,22 @@ function signup({ username, password }) {
 function authenticate({ username, password }) {
     return knex('user').where({ username })
           .then(([user]) => {
-                if (!user) { return ({ success: false }); }
-                const { hash } = saltHashPassword({ 
-                    password,
-                    salt: user.salt
-                });
-                return ({ success: hash === user.encrypted_password });
+              if (user) {
+                  const { hash } = saltHashPassword({ password, salt: user.salt });
+                  if (hash === user.encrypted_password) {
+                    return new Promise((resolve, reject) => {
+                        resolve({ authenticated: true });
+                    });
+                  } else {
+                      return new Promise((resolve, reject) => {
+                          reject('Incorrect password');
+                      })
+                  }
+              } else {
+                  return new Promise((resolve, reject) => { 
+                      reject('User doesn\'t exist');
+                    });
+              }
           });
 }
 

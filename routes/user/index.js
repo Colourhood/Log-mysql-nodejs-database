@@ -1,6 +1,9 @@
 const user = require('express').Router();
 const store = require('routes/user/store');
 const messages = require('routes/user/messages');
+const aws = require('aws-s3');
+
+const { actions, keys } = aws;
 
 user.post('/signup', (request, response) => {
     console.log('The POST method to create a user was called '+request.body.username);
@@ -23,19 +26,27 @@ user.post('/signup', (request, response) => {
 });
 
 user.post('/login', (request, response) => {
-    console.log('The POST method to log in a user was called');
-    store.authenticate({
-        username: request.body.username,
-        password: request.body.password
-    })
-    .then(({ success }) => {
-        if (success) {
-            response.status(200).json({ 'username': request.body.username });
-        } else {
-            response.status(401).json({ 'message': 'Check your email or password' });
-        }
-    })
-})
+    var username = request.body.username;
+
+    console.log(username);
+    
+    if (username !== ' ' || username !== undefined) {
+        const awsPromise = actions.getObject(keys.pImage, username);
+        const mySqlPromise = store.authenticate({ username: username, password: request.body.password });
+
+        Promise.all([awsPromise, mySqlPromise]).then((values) => {
+            console.log(values);
+            const image = values[0];
+            response.status(200).json({ 'username': username,
+                                        'image': image });
+        }).catch((error) => {
+            response.status(401).json({ 'error': error });
+        });
+    } else {
+        response.status(401).json({ 'error': 'Missing required fields' });
+    }
+
+});
 
 user.use(messages);
 
