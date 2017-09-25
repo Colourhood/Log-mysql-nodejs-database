@@ -62,7 +62,7 @@ function authenticate({ username, password }) {
                   }
               } else {
                   return new Promise((resolve, reject) => { 
-                      reject('User doesn\'t exist');
+                      reject('Account doesn\'t exist');
                     });
               }
           });

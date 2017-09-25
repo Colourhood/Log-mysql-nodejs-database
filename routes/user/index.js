@@ -37,9 +37,15 @@ user.post('/login', (request, response) => {
 
         Promise.all([awsPromise, mySqlPromise]).then((values) => {
             console.log(values);
-            const image = values[0];
-            response.status(200).json({ 'username': username,
-                                        'image': image });
+            const imageRequest = values[0];
+            const { success, image, message } = imageRequest;
+            if (success) {
+                response.status(200).json({ 'username': username,
+                                            'image': image });
+            } else {
+                response.status(404).json({ 'username': username,
+                                            'error': message });
+            }
         }).catch((error) => {
             response.status(500).json({ 'error': error });
         });

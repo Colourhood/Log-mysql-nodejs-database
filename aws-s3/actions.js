@@ -13,11 +13,11 @@ function listAllObjects() {
 function getObject(predef, key) {
     return S3.getObject({ Key: predef+key }).promise().then((data) => {
         return new Promise((resolve, reject) => {
-            resolve(data);
+            resolve({ success: true, image: data });
         });
     }).catch((error) => {
         return new Promise((resolve, reject) => {
-            reject(error.message);
+            resolve({ success: false, message: error.message });
         });
     });
 }
