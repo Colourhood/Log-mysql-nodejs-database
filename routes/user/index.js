@@ -3,7 +3,7 @@ const store = require('routes/user/store');
 const messages = require('routes/user/messages');
 const aws = require('aws-s3');
 
-const { actions, keys } = aws;
+const { actions, keys, ext } = aws;
 
 user.post('/signup', (request, response) => {
     console.log('The POST method to create a user was called '+request.body.username);
@@ -32,7 +32,7 @@ user.post('/login', (request, response) => {
     console.log(username);
     
     if (username !== ' ' || username !== undefined) {
-        const awsPromise = actions.getObject(keys.pImage, username);
+        const awsPromise = actions.getObject(keys.pImage, username, ext.PNG);
         const mySqlPromise = store.authenticate({ username: username, password: password });
 
         Promise.all([awsPromise, mySqlPromise]).then((values) => {

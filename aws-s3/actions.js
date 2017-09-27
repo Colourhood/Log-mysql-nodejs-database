@@ -10,8 +10,9 @@ function listAllObjects() {
     });
 }
 
-function getObject(predef, key) {
-    return S3.getObject({ Key: predef+key }).promise().then((object) => {
+function getObject(predef, key, ext) {
+    return S3.getObject({ Key: predef+key+ext }).promise().then((object) => {
+        console.log(object);
         const { Body } = object;
         return new Promise((resolve, reject) => {
             resolve({ success: true, image: Body });
