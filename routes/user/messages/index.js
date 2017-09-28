@@ -21,7 +21,7 @@ messages.get('/messages/:username/:friendname', (request, response) => {
     });
 });
 
-messages.put('/messages/', (request, response) => {
+messages.post('/messages', (request, response) => {
     console.log('Putting new message into database');
     const sentBy = request.body.sentBy;
     const sentTo = request.body.sentTo;
