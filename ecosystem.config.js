@@ -7,7 +7,7 @@ module.exports = {
       production: {
         user: 'colourhood',
         host: 'ec2-52-14-241-17.us-east-2.compute.amazonaws.com',
-        key: '~/.ssh/aws-colourhood-server-key-pair.pem',
+        key: '~/.ssh/aws-colourhood-server-key-pair',
         ref: 'origin/master',
         repo: 'git@github.com:Colourhood/Log-mysql-nodejs-database.git',
         path: '/home/colourhood/COLOURHOOD/Log-mysql-nodejs-database',
