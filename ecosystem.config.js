@@ -4,15 +4,6 @@ module.exports = {
       script: './index.js'
     }],
     deploy: {
-      local: {
-        user: 'colourhood',
-        host: 'ec2-52-14-241-17.us-east-2.compute.amazonaws.com',
-        key: '~/.ssh/aws-colourhood-server-key-pair',
-        ref: 'origin/master',
-        repo: 'git@github.com:Colourhood/Log-mysql-nodejs-database.git',
-        path: 'User/colourhood/Desktop/COLOURHOOD/Log-mysql-nodejs-database',
-        'post-deploy': 'npm install && pm2 startOrRestart ecosystem.config.js'
-      },
       production: {
         user: 'colourhood',
         host: 'ec2-52-14-241-17.us-east-2.compute.amazonaws.com',
