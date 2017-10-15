@@ -1,22 +1,26 @@
 const messages = require('express').Router();
 const store = require('routes/user/messages/store');
+const io = require('routes/user/messages/socketio');
 
 messages.get('/messages/:username', (request, response) => {
+    const username = request.params.username;
+
+    /*Knex-mySQL*/
     console.log('Get Messages endpoint was called - user: '+JSON.stringify(request.params.username));
     store.getHomeMessages({
-        username: request.params.username
+        username: username
     }).then((data) => {
         response.status(200).json(data);
     });
+    /*Socket.io*/
+    io.homeConnection(request.app.io, username);
 });
 
 messages.get('/messages/:username/:friendname', (request, response) => {
-    console.log('Get messages with friend');
     store.getMessagesWithFriend({
         username: request.params.username,
         friendname: request.params.friendname
     }).then((data) => {
-        console.log(`Data from messages with friend ${data}`);
         response.status(200).json({ 'messages': data });
     });
 });
