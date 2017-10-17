@@ -2,21 +2,26 @@ const messages = require('express').Router();
 const store = require('routes/user/messages/store');
 
 messages.get('/messages/:username', (request, response) => {
+    const username = request.params.username;
+
+    /*Knex-mysql*/
     console.log('Get Messages endpoint was called - user: '+JSON.stringify(request.params.username));
     store.getHomeMessages({
-        username: request.params.username
+        username: username
     }).then((data) => {
         response.status(200).json(data);
     });
 });
 
 messages.get('/messages/:username/:friendname', (request, response) => {
-    console.log('Get messages with friend');
+    const username = request.params.username;
+    const friendname = request.params.friendname;
+
+    /*Knex-mysql*/
     store.getMessagesWithFriend({
-        username: request.params.username,
-        friendname: request.params.friendname
+        username: username,
+        friendname: friendname
     }).then((data) => {
-        console.log(`Data from messages with friend ${data}`);
         response.status(200).json({ 'messages': data });
     });
 });
