@@ -18,7 +18,7 @@ module.exports = (io) => {
 
         /*Socketio Room Event*/
         socket.on('join room', (data) => {
-            console.log(`Number of server chat objects: ${Object.keys(socketRooms).length}`);
+            console.log(`Number of server chat objects: ${Object.keys(socketRooms).length} \n Keys: ${Object.keys(socketRooms)}`);
             const chatID = data[0].chatID;
             const username = data[0].username;
 
@@ -38,7 +38,7 @@ module.exports = (io) => {
 
                 if (chatObject.getUserCount() <= 0) {
                     console.log('There are no longer any users in this chat, releasing Object');
-                    delete socketRooms[chatObject];
+                    delete socketRooms[chatID];
                 }
             });
         })
