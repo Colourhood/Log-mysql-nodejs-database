@@ -16,6 +16,7 @@
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
     "knex": "^0.13.0",
+    "moment": "^2.19.1",
     "mysql": "^2.14.1",
     "socket.io": "^2.0.3",
     "untildify": "^3.0.2"
