@@ -1,15 +1,20 @@
 const Chat = require('socketio/Chat');
 
-var socketRooms = {}
+var chatrooms = {}
 
 function getChatObject(chatID) {
-    if (socketRooms.hasOwnProperty(chatID)) {
+    if (chatrooms.hasOwnProperty(chatID)) {
         //chatID object does exist, get ServerChat Object
-        return socketRooms[chatID];
+        return chatrooms[chatID];
     } else {
         //create chat room
-        return socketRooms[chatID] = new Chat(chatID);
+        return chatrooms[chatID] = new Chat(chatID, deleteChatRoom);
     }
+}
+
+function deleteChatRoom(chatID) {
+    delete chatrooms[chatID];
+    console.log(`Delete chatroom was called; Number of chatrooms: ${Object.keys(chatrooms).length}`)
 }
 
 module.exports = (io) => {
@@ -18,7 +23,7 @@ module.exports = (io) => {
 
         /*Socketio Room Event*/
         socket.on('join room', (data) => {
-            console.log(`Number of server chat objects: ${Object.keys(socketRooms).length} \n Keys: ${Object.keys(socketRooms)}`);
+            //console.log(`Number of server chat objects: ${Object.keys(chatrooms).length} \n Keys: ${Object.keys(chatrooms)}`);
             const chatID = data[0].chatID;
             const username = data[0].username;
 
@@ -38,7 +43,9 @@ module.exports = (io) => {
 
                 if (chatObject.getUserCount() <= 0) {
                     console.log('There are no longer any users in this chat, releasing Object');
-                    delete socketRooms[chatID];
+                    //Release all the timers, otherwise they will keep running globally
+                    chatObject.clearTimers();
+                    deleteChatRoom(chatID);
                 }
             });
         })

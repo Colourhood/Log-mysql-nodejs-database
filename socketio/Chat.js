@@ -1,23 +1,56 @@
+const moment = require('moment');
+const twentyMinutesExpiredActivity = (1000 * 60) * 20;
+const oneSecond = 1000;
+
 class Chat {
-    constructor(chatID) {
+    constructor(chatID, func) {
         this.chatID = chatID;
         this.users = {};
+        this.mostRecentActivity = moment();
+
+        this.timer = this.scheduleExpirationTimer();
+        this.release = func
     }
 
+    
+
+    /*JS TIMERS*/
+    scheduleExpirationTimer() {
+        return setInterval( () => this.checkLastActivity(), oneSecond);
+    }
+
+    checkLastActivity() {
+        const now = moment();
+        const difference = (now - this.mostRecentActivity);
+
+        if (difference > oneSecond) {
+            console.log('Activity expired, cancelling timers and releasing object');
+            this.clearTimers();
+            this.release(this.chatID);
+        }
+    }
+
+    clearTimers() {
+        clearInterval(this.timer);
+    }
+
+    /*Chat Events*/
     joinChat(username) {
         if (this.users.hasOwnProperty(username)) {
-            console.log('User already exists within chat room');
+            //User already exists
         } else {
-            console.log(`Added user ${username} to chat`);
+            //Add user to chat room
             this.users[username] = username;
         }
-        console.log('List of users in chat server: '+Object.keys(this.users));
+        this.updateActivity();
     }
 
     leaveChat(username) {
-        console.log(`Removed user ${username} from chat`);
         delete this.users[username];
-        console.log('List of users in chat server: '+Object.keys(this.users));
+    }
+
+    updateActivity() {
+        this.mostRecentActivity = moment();
     }
 
     getUserCount() {
