@@ -31,6 +31,8 @@ module.exports = (io) => {
                 const chatObject = getChatObject(chatID);
                 chatObject.joinChat(username);
             });
+
+            //console.log(`Rooms in io: ${JSON.stringify(socket.adapter.rooms)}`);
         });
         
         socket.on('leave room', (data) => {
@@ -48,19 +50,35 @@ module.exports = (io) => {
                     deleteChatRoom(chatID);
                 }
             });
+            //console.log(`Rooms in io: ${JSON.stringify(socket.adapter.rooms)}`);
         })
 
         /*Socketio Chat Events*/
         socket.on('send message', (data) => {
-            socket.to(data.chatID).emit(data.message);
+            const chatID = data[0].chatID;
+            const message = data[0].message;
+            const chatObject = getChatObject(chatID);
+
+            console.log('Send message was emitted to, message: '+message);
+
+            socket.in(chatID).emit('receive message', { message: message });
+            chatObject.updateActivity();
         });
 
         socket.on('start typing', (data) => {
-            socket.to(data.chatID).emit('start typing');
+            const chatID = data[0].chatID;
+            const chatObject = getChatObject(chatID);
+
+            socket.in(chatID).emit('start typing');
+            chatObject.updateActivity();
         });
 
         socket.on('stop typing', (data) => {
-            socket.to(data.chatID).emit('stop typing');
+            const chatID = data[0].chatID;
+            const chatObject = getChatObject(chatID);
+
+            socket.in(chatID).emit('stop typing');
+            chatObject.updateActivity();
         });
 
     });
