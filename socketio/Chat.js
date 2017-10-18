@@ -12,18 +12,16 @@ class Chat {
         this.release = func
     }
 
-    
-
     /*JS TIMERS*/
     scheduleExpirationTimer() {
-        return setInterval( () => this.checkLastActivity(), oneSecond);
+        return setInterval( () => this.checkLastActivity(), twentyMinutesExpiredActivity);
     }
 
     checkLastActivity() {
         const now = moment();
         const difference = (now - this.mostRecentActivity);
 
-        if (difference > oneSecond) {
+        if (difference > twentyMinutesExpiredActivity) {
             console.log('Activity expired, cancelling timers and releasing object');
             this.clearTimers();
             this.release(this.chatID);
@@ -36,6 +34,7 @@ class Chat {
 
     /*Chat Events*/
     joinChat(username) {
+        console.log(`User joined chat ${username}`)
         if (this.users.hasOwnProperty(username)) {
             //User already exists
         } else {
@@ -46,6 +45,7 @@ class Chat {
     }
 
     leaveChat(username) {
+        console.log(`User left chat ${username}`)
         delete this.users[username];
     }
 
