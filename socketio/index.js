@@ -61,7 +61,7 @@ module.exports = (io) => {
 
             console.log('Send message was emitted to, message: '+message);
 
-            socket.in(chatID).emit('receive message', { message: message });
+            socket.in(chatID).emit('send message', { message: message });
             chatObject.updateActivity();
         });
 
