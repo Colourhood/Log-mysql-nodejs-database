@@ -63,7 +63,7 @@ function authenticate({ username, password }) {
               } else {
                   return new Promise((resolve, reject) => { 
                       reject('Account doesn\'t exist');
-                    });
+                  });
               }
           });
 }

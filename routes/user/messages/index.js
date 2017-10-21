@@ -1,5 +1,8 @@
 const messages = require('express').Router();
 const store = require('routes/user/messages/store');
+const aws = require('aws-s3');
+
+const { actions } = aws;
 
 messages.get('/messages/:username', (request, response) => {
     const username = request.params.username;
