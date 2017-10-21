@@ -1,5 +1,8 @@
 const messages = require('express').Router();
 const store = require('routes/user/messages/store');
+const aws = require('aws-s3');
+
+const { actions } = aws;
 
 messages.get('/messages/:username', (request, response) => {
     const username = request.params.username;
@@ -10,6 +13,8 @@ messages.get('/messages/:username', (request, response) => {
         username: username
     }).then((data) => {
         response.status(200).json(data);
+    }).catch((error) => {
+        response.status(500).json({ 'error': error });
     });
 });
 

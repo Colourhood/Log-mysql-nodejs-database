@@ -3,7 +3,7 @@ const store = require('routes/user/store');
 const messages = require('routes/user/messages');
 const aws = require('aws-s3');
 
-const { actions, keys, ext } = aws;
+const { actions } = aws;
 
 user.post('/signup', (request, response) => {
     console.log('The POST method to create a user was called '+request.body.username);
@@ -28,29 +28,28 @@ user.post('/signup', (request, response) => {
 user.post('/login', (request, response) => {
     const username = request.body.username;
     const password = request.body.password;
-
-    console.log(username);
     
     if (username !== ' ' || username !== undefined) {
-        const awsPromise = actions.getObject(keys.pImage, username, ext.PNG);
-        const mySqlPromise = store.authenticate({ username: username, password: password });
+        const knexPromise = store.authenticate({ username: username, password: password });
+        const awsPromise = actions.getProfileImage(username);
 
-        Promise.all([awsPromise, mySqlPromise]).then((values) => {
-            console.log(values);
-            const imageRequest = values[0];
-            const { success, image, message } = imageRequest;
-            if (success) {
+        Promise.all([knexPromise, awsPromise]).then((values) => {
+            const { authenticated } = values[0]; //Database Authentication
+            const { success, image, error } = values[1]; //Aws Image Object
+            
+            if (success && authenticated) {
                 response.status(200).json({ 'username': username,
                                             'image': image });
-            } else {
+            } else if (!success && authenticated){
+                //Authentication successful, but image requested was not successful
                 response.status(404).json({ 'username': username,
-                                            'error': message });
+                                            'error': error });
             }
         }).catch((error) => {
             response.status(500).json({ 'error': error });
         });
     } else {
-        response.status(400).json({ 'error': 'Missing required fields' });
+        response.status(404).json({ 'error': 'Missing required fields' });
     }
 
 });
