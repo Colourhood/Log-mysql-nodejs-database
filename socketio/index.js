@@ -24,8 +24,7 @@ module.exports = (io) => {
         /*Socketio Room Event*/
         socket.on('join room', (data) => {
             //console.log(`Number of server chat objects: ${Object.keys(chatrooms).length} \n Keys: ${Object.keys(chatrooms)}`);
-            const chatID = data[0].chatID;
-            const username = data[0].username;
+            const { chatID, username } = data[0];
 
             socket.join(chatID, () => {
                 const chatObject = getChatObject(chatID);
@@ -36,8 +35,7 @@ module.exports = (io) => {
         });
         
         socket.on('leave room', (data) => {
-            const chatID = data[0].chatID;
-            const username = data[0].username;
+            const { chatID, username } = data[0];
 
             socket.leave(chatID, () => {
                 const chatObject = getChatObject(chatID);
@@ -55,10 +53,8 @@ module.exports = (io) => {
 
         /*Socketio Chat Events*/
         socket.on('send message', (data) => {
-            const chatID = data[0].chatID;
-            const message = data[0].message;
+            const { chatID, message }= data[0];
             const chatObject = getChatObject(chatID);
-
             console.log('Send message was emitted to, message: '+message);
 
             socket.in(chatID).emit('send message', { message: message });
@@ -66,10 +62,8 @@ module.exports = (io) => {
         });
 
         socket.on('start typing', (data) => {
-            const chatID = data[0].chatID;
-            const username = data[0].username;
+            const { chatID, username } = data[0];
             const chatObject = getChatObject(chatID);
-
             console.log(`${username} is typing`);
 
             socket.in(chatID).emit('start typing');
@@ -77,10 +71,8 @@ module.exports = (io) => {
         });
 
         socket.on('stop typing', (data) => {
-            const chatID = data[0].chatID;
-            const username = data[0].username;
+            const { chatID, username } = data[0];
             const chatObject = getChatObject(chatID);
-
             console.log(`${username} stopped typing`);
 
             socket.in(chatID).emit('stop typing');
