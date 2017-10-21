@@ -14,7 +14,7 @@ function getObject(predef, key, ext) {
     return S3.getObject({ Key: predef+key+ext }).promise().then((object) => {
         console.log(object);
         return new Promise((resolve, reject) => {
-            resolve({ success: true, image: object.Body.toString('base64') });
+            resolve({ success: true, object: object.Body.toString('base64') });
         });
     }).catch((error) => {
         return new Promise((resolve, reject) => {

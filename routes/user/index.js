@@ -28,21 +28,20 @@ user.post('/signup', (request, response) => {
 user.post('/login', (request, response) => {
     const username = request.body.username;
     const password = request.body.password;
-
-    console.log(username);
     
     if (username !== ' ' || username !== undefined) {
+        const knexPromise = store.authenticate({ username: username, password: password });
         const awsPromise = actions.getObject(keys.pImage, username, ext.PNG);
-        const mySqlPromise = store.authenticate({ username: username, password: password });
 
-        Promise.all([awsPromise, mySqlPromise]).then((values) => {
-            console.log(values);
-            const imageRequest = values[0];
-            const { success, image, message } = imageRequest;
-            if (success) {
+        Promise.all([knexPromise, awsPromise]).then((values) => {
+            const { authenticated } = values[0]; //Database Authentication
+            const { success, object, message } = values[1]; //Aws Image Object
+            
+            if (success && authenticated) {
                 response.status(200).json({ 'username': username,
-                                            'image': image });
-            } else {
+                                            'image': object });
+            } else if (!success && authenticated){
+                //Authentication successful, but image requested was not successful
                 response.status(404).json({ 'username': username,
                                             'error': message });
             }
