@@ -3,7 +3,7 @@ const store = require('routes/user/store');
 const messages = require('routes/user/messages');
 const aws = require('aws-s3');
 
-const { actions, keys, ext } = aws;
+const { actions } = aws;
 
 user.post('/signup', (request, response) => {
     console.log('The POST method to create a user was called '+request.body.username);
@@ -31,15 +31,15 @@ user.post('/login', (request, response) => {
     
     if (username !== ' ' || username !== undefined) {
         const knexPromise = store.authenticate({ username: username, password: password });
-        const awsPromise = actions.getObject(keys.pImage, username, ext.PNG);
+        const awsPromise = actions.getProfileImage(username);
 
         Promise.all([knexPromise, awsPromise]).then((values) => {
             const { authenticated } = values[0]; //Database Authentication
-            const { success, object, message } = values[1]; //Aws Image Object
+            const { success, image, message } = values[1]; //Aws Image Object
             
             if (success && authenticated) {
                 response.status(200).json({ 'username': username,
-                                            'image': object });
+                                            'image': image });
             } else if (!success && authenticated){
                 //Authentication successful, but image requested was not successful
                 response.status(404).json({ 'username': username,

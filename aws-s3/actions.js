@@ -1,4 +1,6 @@
 const S3 = require('aws-s3/config');
+const keys = require('aws-s3/keys');
+const ext = require('aws-s3/extensions');
 
 function listAllObjects() {
     S3.listObjects((error, data) => {
@@ -12,15 +14,28 @@ function listAllObjects() {
 
 function getObject(predef, key, ext) {
     return S3.getObject({ Key: predef+key+ext }).promise().then((object) => {
-        console.log(object);
+        //console.log(object);
         return new Promise((resolve, reject) => {
             resolve({ success: true, object: object.Body.toString('base64') });
         });
     }).catch((error) => {
         return new Promise((resolve, reject) => {
-            resolve({ success: false, message: error.message });
+            resolve({ success: false, errorMessage: error.message });
         });
     });
 }
 
-module.exports = { listAllObjects, getObject };
+function getProfileImage(username) {
+    return S3.getObject({ Key: keys.pImage+username+ext.PNG }).promise().then((object) => {
+        //console.log(object);
+        return new Promise((resolve, reject) => {
+            resolve({ success: true, image: object.Body.toString('base64') });
+        });
+    }).catch((error) => {
+        return new Promise((resolve, reject) => {
+            resolve({ success: false, errorMessage: error.message });
+        });
+    });
+}
+
+module.exports = { listAllObjects, getObject, getProfileImage };
