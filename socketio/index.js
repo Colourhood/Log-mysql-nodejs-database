@@ -67,7 +67,10 @@ module.exports = (io) => {
 
         socket.on('start typing', (data) => {
             const chatID = data[0].chatID;
+            const username = data[0].username;
             const chatObject = getChatObject(chatID);
+
+            console.log(`${username} is typing`);
 
             socket.in(chatID).emit('start typing');
             chatObject.updateActivity();
@@ -75,7 +78,10 @@ module.exports = (io) => {
 
         socket.on('stop typing', (data) => {
             const chatID = data[0].chatID;
+            const username = data[0].username;
             const chatObject = getChatObject(chatID);
+
+            console.log(`${username} stopped typing`);
 
             socket.in(chatID).emit('stop typing');
             chatObject.updateActivity();
