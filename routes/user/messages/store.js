@@ -27,15 +27,17 @@ function getHomeMessages({ username }) {
 
                 return Promise.all([knexPromise, awsPromise]).then((data) => {
                     const { sentTo, sentBy, message } = data[0][0]; //Database data
-                    const { success, image, errorMessage } = data[1]; //Aws Image Object
+                    const { success, image, error } = data[1]; //Aws Image Object
 
                     if (success) { //Image exists for user!
-                        return [{ sentTo, sentBy, message, image }]; 
+                        return [{ sentTo, sentBy, message, image }];
                     } else { //Image doesn't exist for user :(
-                        return [{ sentTo, sentBy, message, errorMessage }];
+                        return [{ sentTo, sentBy, message, error }];
                     }
                 }).catch((error) => {
-                    console.log(`An error occurred - fetching friend profile pic: ${error}`);
+                    return new Promise((resolve, reject) => {
+                        reject(`Internal server error: ${error}`);
+                    });
                 });
 
             });

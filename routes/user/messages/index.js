@@ -13,6 +13,8 @@ messages.get('/messages/:username', (request, response) => {
         username: username
     }).then((data) => {
         response.status(200).json(data);
+    }).catch((error) => {
+        response.status(500).json({ 'error': error });
     });
 });
 

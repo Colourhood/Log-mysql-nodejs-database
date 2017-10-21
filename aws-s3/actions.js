@@ -33,7 +33,7 @@ function getProfileImage(username) {
         });
     }).catch((error) => {
         return new Promise((resolve, reject) => {
-            resolve({ success: false, errorMessage: error.message });
+            resolve({ success: false, error: error.message });
         });
     });
 }

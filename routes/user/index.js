@@ -35,7 +35,7 @@ user.post('/login', (request, response) => {
 
         Promise.all([knexPromise, awsPromise]).then((values) => {
             const { authenticated } = values[0]; //Database Authentication
-            const { success, image, message } = values[1]; //Aws Image Object
+            const { success, image, error } = values[1]; //Aws Image Object
             
             if (success && authenticated) {
                 response.status(200).json({ 'username': username,
@@ -43,13 +43,13 @@ user.post('/login', (request, response) => {
             } else if (!success && authenticated){
                 //Authentication successful, but image requested was not successful
                 response.status(404).json({ 'username': username,
-                                            'error': message });
+                                            'error': error });
             }
         }).catch((error) => {
             response.status(500).json({ 'error': error });
         });
     } else {
-        response.status(400).json({ 'error': 'Missing required fields' });
+        response.status(404).json({ 'error': 'Missing required fields' });
     }
 
 });
