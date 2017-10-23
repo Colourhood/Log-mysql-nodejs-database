@@ -21,18 +21,18 @@ function getHomeMessages({ username }) {
                 const knexPromise = knex('messages')
                                     .where({ 'sentBy': username, 'sentTo': friend })
                                     .orWhere({ 'sentBy': friend, 'sentTo': username })
-                                    .select('sentTo', 'sentBy', 'message')
+                                    .select('sentTo', 'sentBy', 'message', 'created_at')
                                     .orderBy('created_at', 'desc')
                                     .limit(1);
 
                 return Promise.all([knexPromise, awsPromise]).then((data) => {
-                    const { sentTo, sentBy, message } = data[0][0]; //Database data
+                    const { sentTo, sentBy, message, created_at } = data[0][0]; //Database data
                     const { success, image, error } = data[1]; //Aws Image Object
 
                     if (success) { //Image exists for user!
-                        return [{ sentTo, sentBy, message, image }];
+                        return [{ sentTo, sentBy, message, image, created_at }];
                     } else { //Image doesn't exist for user :(
-                        return [{ sentTo, sentBy, message, error }];
+                        return [{ sentTo, sentBy, message, created_at, error }];
                     }
                 }).catch((error) => {
                     return new Promise((resolve, reject) => {
@@ -47,7 +47,7 @@ function getMessagesWithFriend({ username, friendname }) {
     return knex('messages')
           .where({ 'sentBy': username, 'sentTo': friendname })
           .orWhere({ 'sentBy': friendname, 'sentTo': username })
-          .select('sentBy', 'sentTo', 'message');
+          .select('sentBy', 'sentTo', 'message', 'created_at');
 }
 
 function storeNewMessage({ sentBy, sentTo, message }) {
