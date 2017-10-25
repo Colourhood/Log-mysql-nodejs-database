@@ -57,7 +57,7 @@ module.exports = (io) => {
             const chatObject = getChatObject(chatID);
             console.log('Send message was emitted to, message: '+message);
 
-            socket.in(chatID).emit('send message', { message: message });
+            socket.in(chatID).emit('send message', { event: 'send message', message: message  });
             chatObject.updateActivity();
         });
 
@@ -66,7 +66,7 @@ module.exports = (io) => {
             const chatObject = getChatObject(chatID);
             console.log(`${username} is typing`);
 
-            socket.in(chatID).emit('start typing');
+            socket.in(chatID).emit('start typing', { event: 'start typing' });
             chatObject.updateActivity();
         });
 
@@ -75,7 +75,7 @@ module.exports = (io) => {
             const chatObject = getChatObject(chatID);
             console.log(`${username} stopped typing`);
 
-            socket.in(chatID).emit('stop typing');
+            socket.in(chatID).emit('stop typing', { event: 'stop typing'});
             chatObject.updateActivity();
         });
 
