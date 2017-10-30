@@ -53,11 +53,11 @@ module.exports = (io) => {
 
         /*Socketio Chat Events*/
         socket.on('send message', (data) => {
-            const { chatID, message }= data[0];
+            const { chatID, message, username, date } = data[0];
             const chatObject = getChatObject(chatID);
-            console.log('Send message was emitted to, message: '+message);
+            //console.log(`Send message was emitted to ${JSON.stringify(data[0])}`);
 
-            socket.in(chatID).emit('send message', { event: 'send message', message: message  });
+            socket.in(chatID).emit('send message', { event: 'send message', message, username, date });
             chatObject.updateActivity();
         });
 
@@ -75,7 +75,7 @@ module.exports = (io) => {
             const chatObject = getChatObject(chatID);
             console.log(`${username} stopped typing`);
 
-            socket.in(chatID).emit('stop typing', { event: 'stop typing'});
+            socket.in(chatID).emit('stop typing', { event: 'stop typing' });
             chatObject.updateActivity();
         });
 
