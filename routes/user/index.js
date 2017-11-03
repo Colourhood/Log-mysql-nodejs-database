@@ -6,15 +6,15 @@ const aws = require('aws-s3');
 const { actions } = aws;
 
 user.post('/signup', (request, response) => {
-    console.log('The POST method to create a user was called '+request.body.username);
+    console.log('The POST method to create a user was called '+request.body.user_address);
     store.signup({
-            username: request.body.username,
+            user_address: request.body.user_address,
             password: request.body.password
         })
         .then(({ success }) => {
             if (success) {
                 console.log('Creating a user was a success '+success);
-                response.status(200).json({ 'username': request.body.username });
+                response.status(200).json({ 'user_address': request.body.user_address });
             }
         })
         .catch(({ failure }) => {
@@ -26,23 +26,23 @@ user.post('/signup', (request, response) => {
 });
 
 user.post('/login', (request, response) => {
-    const username = request.body.username;
+    const user_address = request.body.user_address;
     const password = request.body.password;
     
-    if (username !== ' ' || username !== undefined) {
-        const knexPromise = store.authenticate({ username: username, password: password });
-        const awsPromise = actions.getProfileImage(username);
+    if (user_address !== ' ' || user_address !== undefined) {
+        const knexPromise = store.authenticate({ user_address: user_address, password: password });
+        const awsPromise = actions.getProfileImage(user_address);
 
         Promise.all([knexPromise, awsPromise]).then((values) => {
             const { authenticated } = values[0]; //Database Authentication
             const { success, image, error } = values[1]; //Aws Image Object
             
             if (success && authenticated) {
-                response.status(200).json({ 'username': username,
+                response.status(200).json({ 'user_address': user_address,
                                             'image': image });
             } else if (!success && authenticated){
                 //Authentication successful, but image requested was not successful
-                response.status(404).json({ 'username': username,
+                response.status(404).json({ 'user_address': user_address,
                                             'error': error });
             }
         }).catch((error) => {

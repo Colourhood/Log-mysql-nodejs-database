@@ -33,20 +33,20 @@ class Chat {
     }
 
     /*Chat Events*/
-    joinChat(username) {
-        console.log(`User joined chat ${username}`)
-        if (this.users.hasOwnProperty(username)) {
+    joinChat(user_address) {
+        console.log(`User joined chat ${user_address}`)
+        if (this.users.hasOwnProperty(user_address)) {
             //User already exists
         } else {
             //Add user to chat room
-            this.users[username] = username;
+            this.users[user_address] = user_address;
         }
         this.updateActivity();
     }
 
-    leaveChat(username) {
-        console.log(`User left chat ${username}`)
-        delete this.users[username];
+    leaveChat(user_address) {
+        console.log(`User left chat ${user_address}`)
+        delete this.users[user_address];
     }
 
     updateActivity() {
