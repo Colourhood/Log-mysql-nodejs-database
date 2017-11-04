@@ -24,8 +24,8 @@ function getObject(predef, key) {
     });
 }
 
-function getProfileImage(user_address) {
-    return S3.getObject({ Key: keys.pImage+user_address }).promise().then((object) => {
+function getProfileImage(user_email) {
+    return S3.getObject({ Key: keys.pImage+user_email }).promise().then((object) => {
         //console.log(object);
         return new Promise((resolve, reject) => {
             resolve({ success: true, image: object.Body.toString('base64') });

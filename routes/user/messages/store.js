@@ -3,7 +3,7 @@ const aws = require('aws-s3');
 
 const { actions } = aws;
 
-function getHomeMessages({ user_address }) {
+function getHomeMessages({ user_email }) {
     console.log('Trying to get the messages from SQL store');
 
     // Process of filtering user's friends
@@ -11,16 +11,16 @@ function getHomeMessages({ user_address }) {
           .queryBuilder()
           .select('sent_to')
           .from('messages')
-          .where({ 'sent_by': user_address })
+          .where({ 'sent_by': user_email })
           .union(function() {
-              this.select('sent_by').from('messages').where({ 'sent_to': user_address });
+              this.select('sent_by').from('messages').where({ 'sent_to': user_email });
             }).map((values) => {
                 const friend = values.sent_to;
                 // Processing of fetching most recent message conversation between friend and user
                 const awsPromise = actions.getProfileImage(friend);
                 const knexPromise = knex('messages')
-                                    .where({ 'sent_by': user_address, 'sent_to': friend })
-                                    .orWhere({ 'sent_by': friend, 'sent_to': user_address })
+                                    .where({ 'sent_by': user_email, 'sent_to': friend })
+                                    .orWhere({ 'sent_by': friend, 'sent_to': user_email })
                                     .select('sent_to', 'sent_by', 'message', 'created_at')
                                     .orderBy('created_at', 'desc')
                                     .limit(1);
@@ -43,16 +43,15 @@ function getHomeMessages({ user_address }) {
             });
 }
 
-function getMessagesWithFriend({ user_address, friend_email }) {
+function getMessagesWithFriend({ user_email, friend_email }) {
     return knex('messages')
-          .where({ 'sent_by': user_address, 'sent_to': friend_email })
-          .orWhere({ 'sent_by': friend_email, 'sent_to': user_address })
+          .where({ 'sent_by': user_email, 'sent_to': friend_email })
+          .orWhere({ 'sent_by': friend_email, 'sent_to': user_email })
           .select('sent_by', 'sent_to', 'message', 'created_at');
 }
 
 function storeNewMessage({ sent_by, sent_to, message }) {
     console.log(`Sent by: ${sent_by}\ Sent to: ${sent_to}\n Message: ${message}`);
-
     return knex('messages').insert({ sent_by, sent_to, message });
 }
 

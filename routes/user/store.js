@@ -14,8 +14,8 @@ function randomString() {
     return crypto.randomBytes(4).toString('hex');
 }
 
-function checkIfUserExists(user_address) {
-    return knex('user').where({ user_address })
+function checkIfUserExists(user_email) {
+    return knex('user').where({ wil })
           .then(([user]) => {
               console.log(user);
               if (user) { return ({ exists: true })}
@@ -25,13 +25,13 @@ function checkIfUserExists(user_address) {
 
 //public functions/methods - exported
 
-function signup({ user_address, password }) {
-    return checkIfUserExists(user_address).then(({ exists }) => {
+function signup({ user_email, password }) {
+    return checkIfUserExists(user_email).then(({ exists }) => {
         if (!exists) {
             const { salt, hash } = saltHashPassword({ password });
     
             return knex('user').insert({
-                user_address,
+                user_email,
                 salt,
                 encrypted_password: hash,
             }).then(() => {
@@ -46,8 +46,8 @@ function signup({ user_address, password }) {
     });
 }
 
-function authenticate({ user_address, password }) {
-    return knex('user').where({ user_address })
+function authenticate({ user_email, password }) {
+    return knex('user').where({ user_email })
           .then(([user]) => {
               if (user) {
                   const { hash } = saltHashPassword({ password, salt: user.salt });

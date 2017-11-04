@@ -3,8 +3,8 @@ const twentyMinutesExpiredActivity = (1000 * 60) * 20;
 const oneSecond = 1000;
 
 class Chat {
-    constructor(chatID, func) {
-        this.chatID = chatID;
+    constructor(chat_id, func) {
+        this.chat_id = chat_id;
         this.users = {};
         this.mostRecentActivity = moment();
 
@@ -24,7 +24,7 @@ class Chat {
         if (difference > twentyMinutesExpiredActivity) {
             console.log('Activity expired, cancelling timers and releasing object');
             this.clearTimers();
-            this.release(this.chatID);
+            this.release(this.chat_id);
         }
     }
 
@@ -33,20 +33,20 @@ class Chat {
     }
 
     /*Chat Events*/
-    joinChat(user_address) {
-        console.log(`User joined chat ${user_address}`)
-        if (this.users.hasOwnProperty(user_address)) {
+    joinChat(user_email) {
+        console.log(`User joined chat ${user_email}`)
+        if (this.users.hasOwnProperty(user_email)) {
             //User already exists
         } else {
             //Add user to chat room
-            this.users[user_address] = user_address;
+            this.users[user_email] = user_email;
         }
         this.updateActivity();
     }
 
-    leaveChat(user_address) {
-        console.log(`User left chat ${user_address}`)
-        delete this.users[user_address];
+    leaveChat(user_email) {
+        console.log(`User left chat ${user_email}`)
+        delete this.users[user_email];
     }
 
     updateActivity() {
