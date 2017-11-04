@@ -15,24 +15,30 @@ function getHomeMessages({ user_email }) {
           .union(function() {
               this.select('sent_by').from('messages').where({ 'sent_to': user_email });
             }).map((values) => {
-                const friend = values.sent_to;
+                const friend_email = values.sent_to;
                 // Processing of fetching most recent message conversation between friend and user
-                const awsPromise = actions.getProfileImage(friend);
+                const awsPromise = actions.getProfileImage(friend_email);
                 const knexPromise = knex('messages')
-                                    .where({ 'sent_by': user_email, 'sent_to': friend })
-                                    .orWhere({ 'sent_by': friend, 'sent_to': user_email })
-                                    .select('sent_to', 'sent_by', 'message', 'created_at')
+                                    .where({ 'sent_by': user_email, 'sent_to': friend_email })
+                                    .orWhere({ 'sent_by': friend_email, 'sent_to': user_email })
+                                    .select('message', 'created_at')
                                     .orderBy('created_at', 'desc')
-                                    .limit(1);
+                                    .limit(1)
+                                    .then(([message]) => { return message });
+                const knexPromise2 = knex('user')
+                                    .where({ 'email_address': friend_email })
+                                    .select('first_name', 'last_name', 'email_address')
+                                    .then(([user]) => { return user })
 
-                return Promise.all([knexPromise, awsPromise]).then((data) => {
-                    const { sent_to, sent_by, message, created_at } = data[0][0]; //Database data
-                    const { success, image, error } = data[1]; //Aws Image Object
+                return Promise.all([knexPromise, knexPromise2, awsPromise]).then((data) => {
+                    const { message, created_at } = data[0]; //Database data - Message
+                    const { first_name, last_name, email_address } = data[1]; //Database Friend Details
+                    const { success, image, error } = data[2]; //Aws Image Object
 
                     if (success) { //Image exists for user!
-                        return [{ sent_to, sent_by, message, image, created_at }];
+                        return { email_address, first_name, last_name, message, image, created_at };
                     } else { //Image doesn't exist for user :(
-                        return [{ sent_to, sent_by, message, created_at, error }];
+                        return { email_address, first_name, last_name, message, created_at, error };
                     }
                 }).catch((error) => {
                     return new Promise((resolve, reject) => {
