@@ -47,7 +47,7 @@ function signup({ user_email, password }) {
 }
 
 function authenticate({ user_email, password }) {
-    return knex('user').where({ user_email })
+    return knex('user').where({ email_address: user_email })
           .then(([user]) => {
               if (user) {
                   const { hash } = saltHashPassword({ password, salt: user.salt });
