@@ -15,7 +15,7 @@ function randomString() {
 }
 
 function checkIfUserExists(user_email) {
-    return knex('user').where({ wil })
+    return knex('user').where({ user_email })
           .then(([user]) => {
               console.log(user);
               if (user) { return ({ exists: true })}
