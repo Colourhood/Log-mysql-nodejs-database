@@ -34,17 +34,28 @@ function getHomeMessages({ user_email }) {
                     const messageObject = data[0]; //Database data - Message
                     const friendObject = data[1]; //Database Friend Details
                     const imageObject = data[2]; //Aws Image Object
-
-                    const combinedObjects = Object.assign(messageObject, friendObject, imageObject, {email_address: friend_email});
-                    console.log('Combined objects: '+JSON.stringify(combinedObjects));
+                    const combinedObjects = Object.assign(messageObject,
+                                                          friendObject,
+                                                          imageObject,
+                                                          { email_address: friend_email });
                     return combinedObjects;
                 }).catch((error) => {
-                    console.log('An error occured: '+error);
                     return new Promise((resolve, reject) => {
                         reject(`Internal server error: ${error}`);
                     });
                 });
 
+            }).then((data) => {
+                function compare(a, b) {
+                    if (a.created_at < b.created_at) {
+                        return 1;
+                    }
+                    if (a.created_at > b.created_at) {
+                        return -1
+                    }
+                    return 0;
+                }
+                return data.sort(compare);
             });
 }
 
