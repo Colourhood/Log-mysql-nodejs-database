@@ -27,20 +27,19 @@ function getHomeMessages({ user_email }) {
                                     .then(([message]) => { return message });
                 const knexPromise2 = knex('user')
                                     .where({ 'email_address': friend_email })
-                                    .select('first_name', 'last_name', 'email_address')
+                                    .select('first_name', 'last_name')
                                     .then(([user]) => { return user })
 
                 return Promise.all([knexPromise, knexPromise2, awsPromise]).then((data) => {
-                    const { message, created_at } = data[0]; //Database data - Message
-                    const { first_name, last_name, email_address } = data[1]; //Database Friend Details
-                    const { success, image, error } = data[2]; //Aws Image Object
+                    const messageObject = data[0]; //Database data - Message
+                    const friendObject = data[1]; //Database Friend Details
+                    const imageObject = data[2]; //Aws Image Object
 
-                    if (success) { //Image exists for user!
-                        return { email_address, first_name, last_name, message, image, created_at };
-                    } else { //Image doesn't exist for user :(
-                        return { email_address, first_name, last_name, message, created_at, error };
-                    }
+                    const combinedObjects = Object.assign(messageObject, friendObject, imageObject, {email_address: friend_email});
+                    console.log('Combined objects: '+JSON.stringify(combinedObjects));
+                    return combinedObjects;
                 }).catch((error) => {
+                    console.log('An error occured: '+error);
                     return new Promise((resolve, reject) => {
                         reject(`Internal server error: ${error}`);
                     });
