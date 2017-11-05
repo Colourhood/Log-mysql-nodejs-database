@@ -1,4 +1,4 @@
-const { knexfile_database_password } = require('passwords');
+const { knexfile_database_password } = require('./passwords');
 
 module.exports = {
     client: 'mysql',

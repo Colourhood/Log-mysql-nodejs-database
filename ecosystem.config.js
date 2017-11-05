@@ -11,7 +11,7 @@ module.exports = {
         ref: 'origin/master',
         repo: 'git@github.com:Colourhood/Log-mysql-nodejs-database.git',
         path: '/home/colourhood/COLOURHOOD',
-        'post-deploy': 'npm install && pm2-colourhood startOrRestart ecosystem.config.js'
+        'post-deploy': 'npm install && pm2 startOrRestart ecosystem.config.js'
       }
     }
   }

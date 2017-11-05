@@ -2,18 +2,18 @@ const Chat = require('socketio/Chat');
 
 var chatrooms = {}
 
-function getChatObject(chatID) {
-    if (chatrooms.hasOwnProperty(chatID)) {
-        //chatID object does exist, get ServerChat Object
-        return chatrooms[chatID];
+function getChatObject(chat_id) {
+    if (chatrooms.hasOwnProperty(chat_id)) {
+        //chat_id object does exist, get ServerChat Object
+        return chatrooms[chat_id];
     } else {
         //create chat room
-        return chatrooms[chatID] = new Chat(chatID, deleteChatRoom);
+        return chatrooms[chat_id] = new Chat(chat_id, deleteChatRoom);
     }
 }
 
-function deleteChatRoom(chatID) {
-    delete chatrooms[chatID];
+function deleteChatRoom(chat_id) {
+    delete chatrooms[chat_id];
     console.log(`Delete chatroom was called; Number of chatrooms: ${Object.keys(chatrooms).length}`)
 }
 
@@ -24,28 +24,28 @@ module.exports = (io) => {
         /*Socketio Room Event*/
         socket.on('join room', (data) => {
             //console.log(`Number of server chat objects: ${Object.keys(chatrooms).length} \n Keys: ${Object.keys(chatrooms)}`);
-            const { chatID, username } = data[0];
+            const { chat_id, user_email } = data[0];
 
-            socket.join(chatID, () => {
-                const chatObject = getChatObject(chatID);
-                chatObject.joinChat(username);
+            socket.join(chat_id, () => {
+                const chatObject = getChatObject(chat_id);
+                chatObject.joinChat(user_email);
             });
 
             //console.log(`Rooms in io: ${JSON.stringify(socket.adapter.rooms)}`);
         });
         
         socket.on('leave room', (data) => {
-            const { chatID, username } = data[0];
+            const { chat_id, user_email } = data[0];
 
-            socket.leave(chatID, () => {
-                const chatObject = getChatObject(chatID);
-                chatObject.leaveChat(username);
+            socket.leave(chat_id, () => {
+                const chatObject = getChatObject(chat_id);
+                chatObject.leaveChat(user_email);
 
                 if (chatObject.getUserCount() <= 0) {
                     console.log('There are no longer any users in this chat, releasing Object');
                     //Release all the timers, otherwise they will keep running globally
                     chatObject.clearTimers();
-                    deleteChatRoom(chatID);
+                    deleteChatRoom(chat_id);
                 }
             });
             //console.log(`Rooms in io: ${JSON.stringify(socket.adapter.rooms)}`);
@@ -53,29 +53,29 @@ module.exports = (io) => {
 
         /*Socketio Chat Events*/
         socket.on('send message', (data) => {
-            const { chatID, message, username, date } = data[0];
-            const chatObject = getChatObject(chatID);
+            const { chat_id, message, user_email, date } = data[0];
+            const chatObject = getChatObject(chat_id);
             //console.log(`Send message was emitted to ${JSON.stringify(data[0])}`);
 
-            socket.in(chatID).emit('send message', { event: 'send message', message, username, date });
+            socket.in(chat_id).emit('send message', { event: 'send message', message, user_email, date });
             chatObject.updateActivity();
         });
 
         socket.on('start typing', (data) => {
-            const { chatID, username } = data[0];
-            const chatObject = getChatObject(chatID);
-            console.log(`${username} is typing`);
+            const { chat_id, user_email } = data[0];
+            const chatObject = getChatObject(chat_id);
+            console.log(`${user_email} is typing`);
 
-            socket.in(chatID).emit('start typing', { event: 'start typing' });
+            socket.in(chat_id).emit('start typing', { event: 'start typing' });
             chatObject.updateActivity();
         });
 
         socket.on('stop typing', (data) => {
-            const { chatID, username } = data[0];
-            const chatObject = getChatObject(chatID);
-            console.log(`${username} stopped typing`);
+            const { chat_id, user_email } = data[0];
+            const chatObject = getChatObject(chat_id);
+            console.log(`${user_email} stopped typing`);
 
-            socket.in(chatID).emit('stop typing', { event: 'stop typing' });
+            socket.in(chat_id).emit('stop typing', { event: 'stop typing' });
             chatObject.updateActivity();
         });
 

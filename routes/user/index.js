@@ -6,43 +6,41 @@ const aws = require('aws-s3');
 const { actions } = aws;
 
 user.post('/signup', (request, response) => {
-    console.log('The POST method to create a user was called '+request.body.username);
-    store.signup({
-            username: request.body.username,
-            password: request.body.password
-        })
-        .then(({ success }) => {
-            if (success) {
-                console.log('Creating a user was a success '+success);
-                response.status(200).json({ 'username': request.body.username });
-            }
-        })
-        .catch(({ failure }) => {
-            if (failure) {
-                console.log('There was an error trying to create a user, maybe the user already exists?');
-                response.status(500).json({ 'message': 'Account already exists, please login' });
-            }
-        });
+    const user_email = request.body.user_email;
+    const password = request.body.password;
+    console.log('The POST method to create a user was called '+user_email);
+
+    store.signup({ user_email, password }).then(({ success }) => {
+        if (success) {
+            console.log('Creating a user was a success '+success);
+            response.status(200).json({ 'user_email': user_email });
+        }
+    }).catch(({ failure }) => {
+        if (failure) {
+            console.log('There was an error trying to create a user, maybe the user already exists?');
+            response.status(500).json({ 'message': 'Account already exists, please login' });
+        }
+    });
 });
 
 user.post('/login', (request, response) => {
-    const username = request.body.username;
+    const user_email = request.body.user_email;
     const password = request.body.password;
     
-    if (username !== ' ' || username !== undefined) {
-        const knexPromise = store.authenticate({ username: username, password: password });
-        const awsPromise = actions.getProfileImage(username);
+    if (user_email !== ' ' || user_email !== undefined) {
+        const knexPromise = store.authenticate({ user_email, password });
+        const awsPromise = actions.getProfileImage(user_email);
 
         Promise.all([knexPromise, awsPromise]).then((values) => {
             const { authenticated } = values[0]; //Database Authentication
             const { success, image, error } = values[1]; //Aws Image Object
             
             if (success && authenticated) {
-                response.status(200).json({ 'username': username,
+                response.status(200).json({ 'user_email': user_email,
                                             'image': image });
             } else if (!success && authenticated){
                 //Authentication successful, but image requested was not successful
-                response.status(404).json({ 'username': username,
+                response.status(404).json({ 'user_email': user_email,
                                             'error': error });
             }
         }).catch((error) => {

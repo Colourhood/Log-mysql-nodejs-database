@@ -24,16 +24,16 @@ function getObject(predef, key) {
     });
 }
 
-function getProfileImage(username) {
-    return S3.getObject({ Key: keys.pImage+username }).promise().then((object) => {
+function getProfileImage(user_email) {
+    return S3.getObject({ Key: keys.pImage+user_email }).promise().then((object) => {
         //console.log(object);
         return new Promise((resolve, reject) => {
-            resolve({ success: true, image: object.Body.toString('base64') });
+            resolve({ image: object.Body.toString('base64') });
         });
     }).catch((error) => {
         console.log('Error fetching object from bucket: '+error);
         return new Promise((resolve, reject) => {
-            resolve({ success: false, error: error.message });
+            resolve({ error: error.message });
         });
     });
 }
