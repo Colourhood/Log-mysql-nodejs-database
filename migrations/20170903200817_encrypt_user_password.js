@@ -1,3 +1,4 @@
+/* eslint-disable */
 const { saltHashPassword } = require('../routes/user/store');
 
 exports.up = async function(knex, Promise) {

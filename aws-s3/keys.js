@@ -1,5 +1,5 @@
 const keys = {
-    "pImage": "profilePicture:"
-}
+	'pImage': 'profilePicture:'
+};
 
 module.exports = keys;
