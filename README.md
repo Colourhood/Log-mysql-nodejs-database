@@ -1,4 +1,6 @@
-[![Waffle.io - Columns and their card count](https://badge.waffle.io/Colourhood/Log-mysql-nodejs-database.svg?columns=all)](https://waffle.io/Colourhood/Log-mysql-nodejs-database) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Colourhood/Log-mysql-nodejs-database/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Colourhood/Log-mysql-nodejs-database/?branch=master)
+[![Waffle.io - Columns and their card count](https://badge.waffle.io/Colourhood/Log-mysql-nodejs-database.svg?columns=all)](https://waffle.io/Colourhood/Log-mysql-nodejs-database)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Colourhood/Log-mysql-nodejs-database/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Colourhood/Log-mysql-nodejs-database/?branch=master)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e915df2309bd4363b825584bdb8acc4c)](https://www.codacy.com/app/grrrlikestaquitos/Log-mysql-nodejs-database?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Colourhood/Log-mysql-nodejs-database&amp;utm_campaign=Badge_Grade)
 
 # Log-mysql-nodejs-database
 The database logic that is used for the 'Log Messenger App.'
