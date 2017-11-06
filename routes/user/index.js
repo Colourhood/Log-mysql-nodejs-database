@@ -12,12 +12,12 @@ user.post('/signup', (request, response) => {
 
 	store.signup({ user_email, password }).then(({ success }) => {
 		if (success) {
-			console.log('Creating a user was a success '+success);
+			//console.log('Creating a user was a success '+success);
 			response.status(200).json({ 'user_email': user_email });
 		}
 	}).catch(({ failure }) => {
 		if (failure) {
-			console.log('There was an error trying to create a user, maybe the user already exists?');
+			//console.log('There was an error trying to create a user, maybe the user already exists?');
 			response.status(500).json({ 'message': 'Account already exists, please login' });
 		}
 	});
