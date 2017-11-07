@@ -5,11 +5,12 @@
   "scripts": {
     "restart": "pm2 startOrRestart ecosystem.config.js",
     "deploy": "pm2 deploy ecosystem.config.js production",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ."
   },
   "author": "Andrei Villasana",
-  "license": "ISC",
-  "description": "",
+  "license": "MIT",
+  "description": "A server for the Log-Messenger App",
   "dependencies": {
     "app-module-path": "^2.2.0",
     "aws-sdk": "^2.132.0",
