@@ -4,7 +4,7 @@ const aws = require('aws-s3');
 const { actions } = aws;
 
 function getHomeMessages({ user_email }) {
-	//console.log('Trying to get the messages from SQL store');
+	console.log('Trying to get the messages from SQL store');
 
 	// Process of filtering user's friends
 	return knex
@@ -65,7 +65,7 @@ function getMessagesWithFriend({ user_email, friend_email }) {
 }
 
 function storeNewMessage({ sent_by, sent_to, message }) {
-	//console.log(`Sent by: ${sent_by} Sent to: ${sent_to}\n Message: ${message}`);
+	console.log(`Sent by: ${sent_by} Sent to: ${sent_to}\n Message: ${message}`);
 	return knex('messages').insert({ sent_by, sent_to, message });
 }
 

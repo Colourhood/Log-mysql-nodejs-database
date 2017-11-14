@@ -15,7 +15,7 @@ function randomString() {
 }
 
 function checkIfUserExists(user_email) {
-	return knex('user').where({ user_email })
+	return knex('user').where({ 'email_address': user_email })
 		.then(([user]) => {
 			if (user) { return ({ exists: true });}
 			return ({ exists: false });
@@ -30,11 +30,16 @@ function signup({ user_email, password }) {
 			const { salt, hash } = saltHashPassword({ password });
     
 			return knex('user').insert({
-				user_email,
-				salt,
-				encrypted_password: hash,
+				'email_address': user_email,
+				'first_name': 'Dummy',
+				'last_name': 'Fake',
+				'university': 'University Of Texas',
+				'salt': salt,
+				'encrypted_password': hash,
 			}).then(() => {
 				return Promise.resolve({ success: true });
+			}).catch((error) => {
+				console.log(`There seemed to be an error ${error}`);
 			});
 		}
 		return new Promise((resolve, reject) => {
@@ -44,7 +49,7 @@ function signup({ user_email, password }) {
 }
 
 function authenticate({ user_email, password }) {
-	return knex('user').where({ email_address: user_email })
+	return knex('user').where({ 'email_address': user_email })
 		.then(([user]) => {
 			if (user) {
 				const { hash } = saltHashPassword({ password, salt: user.salt });

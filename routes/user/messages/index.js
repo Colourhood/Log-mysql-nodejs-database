@@ -5,7 +5,7 @@ messages.get('/messages/:user_email', (request, response) => {
 	const user_email = request.params.user_email;
 
 	/*Knex-mysql*/
-	//console.log('Get Messages endpoint was called - user: '+user_email);
+	console.log('Get Messages endpoint was called - user: '+user_email);
 	store.getHomeMessages({ user_email }).then((data) => {
 		response.status(200).json(data);
 	}).catch((error) => {
@@ -24,7 +24,7 @@ messages.get('/messages/:user_email/:friend_email', (request, response) => {
 });
 
 messages.post('/messages', (request, response) => {
-	//console.log('Putting new message into database');
+	console.log('Putting new message into database');
 	const sent_by = request.body.sent_by;
 	const sent_to = request.body.sent_to;
 	const message = request.body.message;

@@ -22,7 +22,7 @@ class Chat {
 		const difference = (now - this.mostRecentActivity);
 
 		if (difference > twentyMinutesExpiredActivity) {
-			//console.log('Activity expired, cancelling timers and releasing object');
+			console.log('Activity expired, cancelling timers and releasing object');
 			this.clearTimers();
 			this.release(this.chat_id);
 		}
@@ -34,7 +34,7 @@ class Chat {
 
 	/*Chat Events*/
 	joinChat(user_email) {
-		//console.log(`User joined chat ${user_email}`);
+		console.log(`User joined chat ${user_email}`);
 		if (this.users.hasOwnProperty(user_email)) {
 			//User already exists
 		} else {
@@ -45,7 +45,7 @@ class Chat {
 	}
 
 	leaveChat(user_email) {
-		//console.log(`User left chat ${user_email}`);
+		console.log(`User left chat ${user_email}`);
 		delete this.users[user_email];
 	}
 
