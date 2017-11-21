@@ -32,7 +32,6 @@ function signup({ user_email, password }) {
 			return knex('user').insert({
 				'email_address': user_email,
 				'first_name': 'Dummy',
-				'last_name': 'Fake',
 				'university': 'University Of Texas',
 				'salt': salt,
 				'encrypted_password': hash,
