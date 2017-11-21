@@ -70,14 +70,5 @@ module.exports = (io) => {
 			chatObject.updateActivity();
 		});
 
-		socket.on('stop typing', (data) => {
-			const { chat_id, user_email } = data[0];
-			const chatObject = getChatObject(chat_id);
-			console.log(`${user_email} stopped typing`);
-
-			socket.in(chat_id).emit('stop typing', { event: 'stop typing' });
-			chatObject.updateActivity();
-		});
-
 	});
 };
