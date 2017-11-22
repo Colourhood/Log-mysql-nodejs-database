@@ -14,16 +14,16 @@ function getChatObject(chat_id) {
 
 function deleteChatRoom(chat_id) {
 	delete chatrooms[chat_id];
-	//console.log(`Delete chatroom was called; Number of chatrooms: ${Object.keys(chatrooms).length}`);
+	console.log(`Delete chatroom was called; Number of chatrooms: ${Object.keys(chatrooms).length}`);
 }
 
 module.exports = (io) => {
 	io.on('connection', (socket) => {
-		//console.log('Connected to socket.io');
+		console.log('Connected to socket.io');
 
 		/*Socketio Room Event*/
 		socket.on('join room', (data) => {
-			//console.log(`Number of server chat objects: ${Object.keys(chatrooms).length} \n Keys: ${Object.keys(chatrooms)}`);
+			console.log(`Number of server chat objects: ${Object.keys(chatrooms).length} \n Keys: ${Object.keys(chatrooms)}`);
 			const { chat_id, user_email } = data[0];
 
 			socket.join(chat_id, () => {
@@ -31,7 +31,7 @@ module.exports = (io) => {
 				chatObject.joinChat(user_email);
 			});
 
-			//console.log(`Rooms in io: ${JSON.stringify(socket.adapter.rooms)}`);
+			console.log(`Rooms in io: ${JSON.stringify(socket.adapter.rooms)}`);
 		});
         
 		socket.on('leave room', (data) => {
@@ -42,20 +42,20 @@ module.exports = (io) => {
 				chatObject.leaveChat(user_email);
 
 				if (chatObject.getUserCount() <= 0) {
-					//console.log('There are no longer any users in this chat, releasing Object');
+					console.log('There are no longer any users in this chat, releasing Object');
 					//Release all the timers, otherwise they will keep running globally
 					chatObject.clearTimers();
 					deleteChatRoom(chat_id);
 				}
 			});
-			//console.log(`Rooms in io: ${JSON.stringify(socket.adapter.rooms)}`);
+			console.log(`Rooms in io: ${JSON.stringify(socket.adapter.rooms)}`);
 		});
 
 		/*Socketio Chat Events*/
 		socket.on('send message', (data) => {
 			const { chat_id, message, user_email, date } = data[0];
 			const chatObject = getChatObject(chat_id);
-			//console.log(`Send message was emitted to ${JSON.stringify(data[0])}`);
+			console.log(`Send message was emitted to ${JSON.stringify(data[0])}`);
 
 			socket.in(chat_id).emit('send message', { event: 'send message', message, user_email, date });
 			chatObject.updateActivity();
@@ -64,18 +64,9 @@ module.exports = (io) => {
 		socket.on('start typing', (data) => {
 			const { chat_id, user_email } = data[0];
 			const chatObject = getChatObject(chat_id);
-			//console.log(`${user_email} is typing`);
+			console.log(`${user_email} is typing`);
 
 			socket.in(chat_id).emit('start typing', { event: 'start typing' });
-			chatObject.updateActivity();
-		});
-
-		socket.on('stop typing', (data) => {
-			const { chat_id, user_email } = data[0];
-			const chatObject = getChatObject(chat_id);
-			//console.log(`${user_email} stopped typing`);
-
-			socket.in(chat_id).emit('stop typing', { event: 'stop typing' });
 			chatObject.updateActivity();
 		});
 

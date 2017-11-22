@@ -16,5 +16,5 @@ app.get('/', (request, response) => {
 });
 
 server.listen(7555, () => {
-	//console.log('Server running on port 7555');
+	console.log('Server running on port 7555');
 });
