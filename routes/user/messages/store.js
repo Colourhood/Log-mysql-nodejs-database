@@ -27,7 +27,7 @@ function getHomeMessages({ user_email }) {
 				.then(([message]) => { return message; });
 			const knexPromise2 = knex('user')
 				.where({ 'email_address': friend_email })
-				.select('first_name', 'last_name')
+				.select('first_name')
 				.then(([user]) => { return user; });
 
 			return Promise.all([knexPromise, knexPromise2, awsPromise]).then((data) => {

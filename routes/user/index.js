@@ -8,17 +8,18 @@ const { actions } = aws;
 user.post('/signup', (request, response) => {
 	const user_email = request.body.user_email;
 	const password = request.body.password;
+	const first_name = request.body.first_name;
 	console.log(`The POST method to create a user was called ${user_email} with passkey: ${password}`);
 
-	store.signup({ user_email, password }).then(({ success }) => {
+	store.signup({ user_email, password, first_name }).then(({ success }) => {
 		if (success) {
 			console.log('Creating a user was a success '+success);
 			response.status(200).json({ 'user_email': user_email });
 		}
 	}).catch(({ failure }) => {
 		if (failure) {
-			console.log('There was an error trying to create a user, maybe the user already exists?');
-			response.status(500).json({ 'message': 'Account already exists, please login' });
+			console.log('There was an error trying to create a user');
+			response.status(500).json({ 'message': `${failure}` });
 		}
 	});
 });

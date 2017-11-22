@@ -24,14 +24,14 @@ function checkIfUserExists(user_email) {
 
 //public functions/methods - exported
 
-function signup({ user_email, password }) {
+function signup({ user_email, password, first_name }) {
 	return checkIfUserExists(user_email).then(({ exists }) => {
 		if (!exists) {
 			const { salt, hash } = saltHashPassword({ password });
     
 			return knex('user').insert({
 				'email_address': user_email,
-				'first_name': 'Dummy',
+				'first_name': first_name,
 				'university': 'University Of Texas',
 				'salt': salt,
 				'encrypted_password': hash,

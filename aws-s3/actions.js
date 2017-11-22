@@ -21,7 +21,7 @@ function getObject(predef, key) {
 
 function getProfileImage(user_email) {
 	return S3.getObject({ Key: keys.pImage+user_email }).promise().then((object) => {
-		console.log(object);
+		//console.log(object);
 		return Promise.resolve({ success: true, image: object.Body.toString('base64') });
 	}).catch((error) => {
 		console.log('Error fetching object from bucket: '+error);
