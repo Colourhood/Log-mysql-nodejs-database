@@ -53,7 +53,11 @@ function authenticate({ user_email, password }) {
 			if (user) {
 				const { hash } = saltHashPassword({ password, salt: user.salt });
 				if (hash === user.encrypted_password) {
-					return Promise.resolve({ authenticated: true });
+					return Promise.resolve({ 
+						authenticated: true, 
+						email_address: user.email_address,
+						first_name: user.first_name
+					 });
 				} else {
 					return Promise.reject('Incorrect password');
 				}

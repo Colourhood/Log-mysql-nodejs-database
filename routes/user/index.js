@@ -33,14 +33,14 @@ user.post('/login', (request, response) => {
 		const awsPromise = actions.getProfileImage(user_email);
 
 		Promise.all([knexPromise, awsPromise]).then((values) => {
-			const { authenticated } = values[0]; //Database Authentication
+			const { authenticated, email_address, first_name } = values[0]; //Database Authentication
 			const { success, image, error } = values[1]; //Aws Image Object
             
 			if (success && authenticated) {
-				response.status(200).json({ 'user_email': user_email, 'image': image });
+				response.status(200).json({ 'user_email': email_address, 'first_name': first_name, 'image': image });
 			} else if (!success && authenticated){
 				//Authentication successful, but image requested was not successful
-				response.status(404).json({ 'user_email': user_email, 'error': error });
+				response.status(404).json({ 'user_email': email_address, 'first_name': first_name, 'error': error });
 			}
 		}).catch((error) => {
 			response.status(500).json({ 'error': error });
