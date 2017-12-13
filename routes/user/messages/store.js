@@ -17,7 +17,7 @@ function getHomeMessages({ user_email }) {
 		}).map((values) => {
 			const friend_email = values.sent_to;
 			// Processing of fetching most recent message conversation between friend and user
-			const awsPromise = actions.getProfileImage(friend_email);
+			// const awsPromise = actions.getProfileImage(friend_email);
 			const knexPromise = knex('messages')
 				.where({ 'sent_by': user_email, 'sent_to': friend_email })
 				.orWhere({ 'sent_by': friend_email, 'sent_to': user_email })
@@ -30,13 +30,13 @@ function getHomeMessages({ user_email }) {
 				.select('first_name')
 				.then(([user]) => { return user; });
 
-			return Promise.all([knexPromise, knexPromise2, awsPromise]).then((data) => {
+			return Promise.all([knexPromise, knexPromise2, /*awsPromise*/]).then((data) => {
 				const messageObject = data[0]; //Database data - Message
 				const friendObject = data[1]; //Database Friend Details
-				const imageObject = data[2]; //Aws Image Object
+				// const imageObject = data[2]; //Aws Image Object
 				const combinedObjects = Object.assign(messageObject,
 					friendObject,
-					imageObject,
+					//imageObject,
 					{ email_address: friend_email });
 				return combinedObjects;
 			}).catch((error) => {
