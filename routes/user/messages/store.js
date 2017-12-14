@@ -7,11 +7,10 @@ const { actions } = aws;
 function getHomeMessages({ user_email }) {
 	console.log('Trying to get the messages from SQL store');
 
-	//Fetching friends
-
+	// Fetching friends
 	return knex('friends')
-		.select('friend')
 		.where({ 'user': user_email })
+		.select('friend')
 		.map((values) => {
 			const friend_email = values.friend;
 			const sortedArray = [ user_email, friend_email].sort().join('');
@@ -54,16 +53,13 @@ function getHomeMessages({ user_email }) {
 		});
 }
 
-function getMessagesWithFriend({ user_email, friend_email }) {
-	return knex('messages')
-		.where({ 'sent_by': user_email, 'sent_to': friend_email })
-		.orWhere({ 'sent_by': friend_email, 'sent_to': user_email })
-		.select('sent_by', 'sent_to', 'message', 'created_at');
+function getMessagesWithFriend({ chat_id }) {
+	return knex('messages').where({ 'chat_id': chat_id }).select('sent_by', 'message_index', 'message', 'created_at');
 }
 
-function storeNewMessage({ sent_by, sent_to, message }) {
-	console.log(`Sent by: ${sent_by} Sent to: ${sent_to}\n Message: ${message}`);
-	return knex('messages').insert({ sent_by, sent_to, message });
+function storeNewMessage({ sent_by, message, chat_id }) {
+	console.log(`Sent by: ${sent_by} Sent to: ${chat_id}\n Message: ${message}`);
+	return knex('messages').insert({ sent_by, message, chat_id });
 }
 
 module.exports = {

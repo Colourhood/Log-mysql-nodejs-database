@@ -13,12 +13,11 @@ messages.get('/messages/:user_email', (request, response) => {
 	});
 });
 
-messages.get('/messages/:user_email/:friend_email', (request, response) => {
-	const user_email = request.params.user_email;
-	const friend_email = request.params.friend_email;
+messages.get('/messages/:chat_id', (request, response) => {
+	const chat_id = request.params.chat_id;
 
 	/*Knex-mysql*/
-	store.getMessagesWithFriend({ user_email, friend_email }).then((data) => {
+	store.getMessagesWithFriend({ chat_id }).then((data) => {
 		response.status(200).json({ 'messages': data });
 	});
 });
@@ -26,10 +25,9 @@ messages.get('/messages/:user_email/:friend_email', (request, response) => {
 messages.post('/messages', (request, response) => {
 	console.log('Putting new message into database');
 	const sent_by = request.body.sent_by;
-	const sent_to = request.body.sent_to;
 	const message = request.body.message;
 
-	store.storeNewMessage({ sent_by, sent_to, message }).then((messageID) => {
+	store.storeNewMessage({ sent_by, message }).then((messageID) => {
 		console.log('ID: '+messageID);
 		response.status(204).send();
 	});
