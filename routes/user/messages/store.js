@@ -1,48 +1,45 @@
 const knex = require('knex')(require('knexfile'));
 const aws = require('aws-s3');
+const crypto = require('crypto');
 
 const { actions } = aws;
 
 function getHomeMessages({ user_email }) {
 	console.log('Trying to get the messages from SQL store');
 
-	// Process of filtering user's friends
-	return knex
-		.queryBuilder()
-		.select('sent_to')
-		.from('messages')
-		.where({ 'sent_by': user_email })
-		.union(function() {
-			this.select('sent_by').from('messages').where({ 'sent_to': user_email });
-		}).map((values) => {
-			const friend_email = values.sent_to;
-			// Processing of fetching most recent message conversation between friend and user
-			// const awsPromise = actions.getProfileImage(friend_email);
-			const knexPromise = knex('messages')
-				.where({ 'sent_by': user_email, 'sent_to': friend_email })
-				.orWhere({ 'sent_by': friend_email, 'sent_to': user_email })
-				.select('message', 'created_at')
-				.orderBy('created_at', 'desc')
-				.limit(1)
-				.then(([message]) => { return message; });
-			const knexPromise2 = knex('user')
-				.where({ 'email_address': friend_email })
-				.select('first_name')
-				.then(([user]) => { return user; });
+	//Fetching friends
 
-			return Promise.all([knexPromise, knexPromise2, /*awsPromise*/]).then((data) => {
+	return knex('friends')
+		.select('friend')
+		.where({ 'user': user_email })
+		.map((values) => {
+			const friend_email = values.friend;
+			const sortedArray = [ user_email, friend_email].sort().join('');
+			const chatID = crypto.createHmac('sha512', sortedArray).digest('hex');
+			console.log(`Friend address: ${JSON.stringify(values)}`);
+			console.log(`Chat ID: ${JSON.stringify(chatID)}`);
+
+			// Fetch the most recent message in conversation
+			const knexMessage = knex('messages')
+				  .where({ 'chat_id': chatID })
+				  .select('message', 'created_at')
+				  .orderBy('created_at', 'desc')
+				  .limit(1)
+				  .then(([message]) => { return message; });
+			// Fetch user details for friend
+			const knexUser = knex('user')
+				  .where({ 'email_address': friend_email })
+				  .select('first_name')
+				  .then(([user]) => { return user;  });
+
+			return Promise.all([knexMessage, knexUser]).then((data) => {
 				const messageObject = data[0]; //Database data - Message
 				const friendObject = data[1]; //Database Friend Details
-				// const imageObject = data[2]; //Aws Image Object
-				const combinedObjects = Object.assign(messageObject,
-					friendObject,
-					//imageObject,
-					{ email_address: friend_email });
+				const combinedObjects = Object.assign(messageObject, friendObject, { 'chat_id': chatID });
 				return combinedObjects;
 			}).catch((error) => {
 				return Promise.reject(`Internal server error: ${error}`);
 			});
-
 		}).then((data) => {
 			function compare(a, b) {
 				if (a.created_at < b.created_at) {
