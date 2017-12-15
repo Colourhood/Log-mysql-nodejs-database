@@ -13,7 +13,7 @@ messages.get('/messages/:user_email', (request, response) => {
 	});
 });
 
-messages.get('/messages/:chat_id', (request, response) => {
+messages.get('/messages/:user_name/:chat_id', (request, response) => {
 	const chat_id = request.params.chat_id;
 
 	/*Knex-mysql*/
