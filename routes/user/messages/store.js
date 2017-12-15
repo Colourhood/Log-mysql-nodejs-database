@@ -5,8 +5,6 @@ const crypto = require('crypto');
 const { actions } = aws;
 
 function getHomeMessages({ user_email }) {
-	console.log('Trying to get the messages from SQL store');
-
 	// Fetching friends
 	return knex('friends')
 		.where({ 'user': user_email })
@@ -15,7 +13,6 @@ function getHomeMessages({ user_email }) {
 			const friend_email = values.friend;
 			const sortedArray = [ user_email, friend_email].sort().join('');
 			const chatID = crypto.createHmac('sha512', sortedArray).digest('hex');
-			console.log(`Friend address: ${JSON.stringify(values)}`);
 			console.log(`Chat ID: ${JSON.stringify(chatID)}`);
 
 			// Fetch the most recent message in conversation
@@ -24,12 +21,17 @@ function getHomeMessages({ user_email }) {
 				  .select('message', 'created_at')
 				  .orderBy('created_at', 'desc')
 				  .limit(1)
-				  .then(([message]) => { return message; });
+				  .then(([message]) => {
+					  if (message == null) {
+						  return { 'message': 'You are now connected on Messenger' };
+					  }
+					  return message;
+				});
 			// Fetch user details for friend
 			const knexUser = knex('user')
 				  .where({ 'email_address': friend_email })
 				  .select('first_name', 'email_address')
-				  .then(([user]) => { return user;  });
+				  .then(([user]) => { return user; });
 
 			return Promise.all([knexMessage, knexUser]).then((data) => {
 				const messageObject = data[0]; //Database data - Message
@@ -58,17 +60,16 @@ function getMessagesWithFriend({ chat_id }) {
 }
 
 function storeNewMessage({ sent_by, message, chat_id }) {
-	console.log(`Sent by: ${sent_by} Sent to: ${chat_id}\n Message: ${message}`);
 	return knex('messages')
-		   .where({ 'chat_id': chat_id })
-		   .select('message_index')
-		   .orderBy('created_at', 'desc')
-		   .limit(1)
-		   .then(([data]) => { 
-			   const message_index = data.message_index+1;
+		.where({ 'chat_id': chat_id })
+		.select('message_index')
+		.orderBy('created_at', 'desc')
+		.limit(1)
+		.then(([data]) => { 
+			const message_index = data.message_index+1;
 
-			   return knex('messages').insert({ message_index, sent_by, message, chat_id });
-			});
+			return knex('messages').insert({ message_index, sent_by, message, chat_id });
+		});
 }
 
 module.exports = {
