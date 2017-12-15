@@ -26,8 +26,9 @@ messages.post('/messages', (request, response) => {
 	console.log('Putting new message into database');
 	const sent_by = request.body.sent_by;
 	const message = request.body.message;
+	const chat_id = request.body.chat_id;
 
-	store.storeNewMessage({ sent_by, message }).then((messageID) => {
+	store.storeNewMessage({ sent_by, message, chat_id }).then((messageID) => {
 		console.log('ID: '+messageID);
 		response.status(204).send();
 	});

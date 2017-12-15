@@ -59,7 +59,16 @@ function getMessagesWithFriend({ chat_id }) {
 
 function storeNewMessage({ sent_by, message, chat_id }) {
 	console.log(`Sent by: ${sent_by} Sent to: ${chat_id}\n Message: ${message}`);
-	return knex('messages').insert({ sent_by, message, chat_id });
+	return knex('messages')
+		   .where({ 'chat_id': chat_id })
+		   .select('message_index')
+		   .orderBy('created_at', 'desc')
+		   .limit(1)
+		   .then(([data]) => { 
+			   const message_index = data.message_index+1;
+
+			   return knex('messages').insert({ message_index, sent_by, message, chat_id });
+			});
 }
 
 module.exports = {
