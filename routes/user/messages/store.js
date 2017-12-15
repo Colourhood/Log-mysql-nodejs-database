@@ -17,27 +17,27 @@ function getHomeMessages({ user_email }) {
 
 			// Fetch the most recent message in conversation
 			const knexMessage = knex('messages')
-			.where({ 'chat_id': chatID })
-			.select('message', 'created_at')
-			.orderBy('created_at', 'desc')
-			.limit(1)
-			.then(([message]) => {
-				if (message == null) {
-					return knex('friends')
-					.select('created_at')
-					.where({ 'user': user_email, 'friend': friend_email })
-					.limit(1)
-					.then(([date]) => { 
-						return { 'message': 'You are now connected on Messenger', 'created_at': date.created_at };
-					});
-				}
-				return message;
-			});
+				.where({ 'chat_id': chatID })
+				.select('message', 'created_at')
+				.orderBy('created_at', 'desc')
+				.limit(1)
+				.then(([message]) => {
+					if (message == null) {
+						return knex('friends')
+							.select('created_at')
+							.where({ 'user': user_email, 'friend': friend_email })
+							.limit(1)
+							.then(([date]) => { 
+								return { 'message': 'You are now connected on Messenger', 'created_at': date.created_at };
+							});
+					}
+					return message;
+				});
 			// Fetch user details for friend
 			const knexUser = knex('user')
-			.where({ 'email_address': friend_email })
-			.select('first_name', 'email_address')
-			.then(([user]) => { return user; });
+				.where({ 'email_address': friend_email })
+				.select('first_name', 'email_address')
+				.then(([user]) => { return user; });
 
 			return Promise.all([knexMessage, knexUser]).then((data) => {
 				const messageObject = data[0]; //Database data - Message
