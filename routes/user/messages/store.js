@@ -1,48 +1,52 @@
 const knex = require('knex')(require('knexfile'));
 const aws = require('aws-s3');
+const crypto = require('crypto');
 
 const { actions } = aws;
 
 function getHomeMessages({ user_email }) {
-	console.log('Trying to get the messages from SQL store');
+	// Fetching friends
+	return knex('friends')
+		.where({ 'user': user_email })
+		.select('friend')
+		.map((values) => {
+			const friend_email = values.friend;
+			const sortedArray = [ user_email, friend_email].sort().join('');
+			const chatID = crypto.createHmac('sha512', sortedArray).digest('hex');
+			console.log(`Chat ID: ${JSON.stringify(chatID)}`);
 
-	// Process of filtering user's friends
-	return knex
-		.queryBuilder()
-		.select('sent_to')
-		.from('messages')
-		.where({ 'sent_by': user_email })
-		.union(function() {
-			this.select('sent_by').from('messages').where({ 'sent_to': user_email });
-		}).map((values) => {
-			const friend_email = values.sent_to;
-			// Processing of fetching most recent message conversation between friend and user
-			const awsPromise = actions.getProfileImage(friend_email);
-			const knexPromise = knex('messages')
-				.where({ 'sent_by': user_email, 'sent_to': friend_email })
-				.orWhere({ 'sent_by': friend_email, 'sent_to': user_email })
+			// Fetch the most recent message in conversation
+			const knexMessage = knex('messages')
+				.where({ 'chat_id': chatID })
 				.select('message', 'created_at')
 				.orderBy('created_at', 'desc')
 				.limit(1)
-				.then(([message]) => { return message; });
-			const knexPromise2 = knex('user')
+				.then(([message]) => {
+					if (message == null) {
+						return knex('friends')
+							.select('created_at')
+							.where({ 'user': user_email, 'friend': friend_email })
+							.limit(1)
+							.then(([date]) => { 
+								return { 'message': 'You are now connected on Messenger', 'created_at': date.created_at };
+							});
+					}
+					return message;
+				});
+			// Fetch user details for friend
+			const knexUser = knex('user')
 				.where({ 'email_address': friend_email })
-				.select('first_name')
+				.select('first_name', 'email_address')
 				.then(([user]) => { return user; });
 
-			return Promise.all([knexPromise, knexPromise2, awsPromise]).then((data) => {
+			return Promise.all([knexMessage, knexUser]).then((data) => {
 				const messageObject = data[0]; //Database data - Message
 				const friendObject = data[1]; //Database Friend Details
-				const imageObject = data[2]; //Aws Image Object
-				const combinedObjects = Object.assign(messageObject,
-					friendObject,
-					imageObject,
-					{ email_address: friend_email });
+				const combinedObjects = Object.assign(messageObject, friendObject, { 'chat_id': chatID });
 				return combinedObjects;
 			}).catch((error) => {
 				return Promise.reject(`Internal server error: ${error}`);
 			});
-
 		}).then((data) => {
 			function compare(a, b) {
 				if (a.created_at < b.created_at) {
@@ -57,16 +61,28 @@ function getHomeMessages({ user_email }) {
 		});
 }
 
-function getMessagesWithFriend({ user_email, friend_email }) {
-	return knex('messages')
-		.where({ 'sent_by': user_email, 'sent_to': friend_email })
-		.orWhere({ 'sent_by': friend_email, 'sent_to': user_email })
-		.select('sent_by', 'sent_to', 'message', 'created_at');
+function getMessagesWithFriend({ chat_id }) {
+	return knex('messages').where({ 'chat_id': chat_id }).select('sent_by', 'message_index', 'message', 'created_at');
 }
 
-function storeNewMessage({ sent_by, sent_to, message }) {
-	console.log(`Sent by: ${sent_by} Sent to: ${sent_to}\n Message: ${message}`);
-	return knex('messages').insert({ sent_by, sent_to, message });
+function storeNewMessage({ sent_by, message, chat_id }) {
+	return knex('messages')
+		.where({ 'chat_id': chat_id })
+		.select('message_index')
+		.orderBy('created_at', 'desc')
+		.limit(1)
+		.then(([data]) => {
+			var message_index;
+			if (data == null) {
+				message_index = 0;
+			} else {
+				message_index = data.message_index+1;
+			}
+			
+			return knex('messages').insert({ message_index, sent_by, message, chat_id }).then(() => {
+				return message_index;
+			});
+		});
 }
 
 module.exports = {
