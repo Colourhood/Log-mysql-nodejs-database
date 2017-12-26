@@ -71,10 +71,17 @@ function storeNewMessage({ sent_by, message, chat_id }) {
 		.select('message_index')
 		.orderBy('created_at', 'desc')
 		.limit(1)
-		.then(([data]) => { 
-			const message_index = data.message_index+1;
-
-			return knex('messages').insert({ message_index, sent_by, message, chat_id });
+		.then(([data]) => {
+			var message_index;
+			if (data == null) {
+				message_index = 0;
+			} else {
+				message_index = data.message_index+1;
+			}
+			
+			return knex('messages').insert({ message_index, sent_by, message, chat_id }).then(() => {
+				return message_index;
+			});
 		});
 }
 
