@@ -7,7 +7,7 @@ messages.get('/messages/:user_email', (request, response) => {
 	/*Knex-mysql*/
 	console.log('Get Messages endpoint was called - user: '+user_email);
 	store.getHomeMessages({ user_email }).then((data) => {
-		response.status(200).json(data);
+		response.status(200).json({ 'messages': data });
 	}).catch((error) => {
 		response.status(500).json({ 'error': error });
 	});

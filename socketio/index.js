@@ -23,19 +23,20 @@ module.exports = (io) => {
 
 		/*Socketio Room Event*/
 		socket.on('join room', (data) => {
-			console.log(`Number of server chat objects: ${Object.keys(chatrooms).length} \n Keys: ${Object.keys(chatrooms)}`);
-			const { chat_id, user_email } = data[0];
+			console.log(`Joining room: data: ${JSON.stringify(data)}`);
+			// console.log(`Number of server chat objects: ${Object.keys(chatrooms).length} \n Keys: ${Object.keys(chatrooms)}`);
+			const { chat_id, user_email } = data;
 
 			socket.join(chat_id, () => {
 				const chatObject = getChatObject(chat_id);
 				chatObject.joinChat(user_email);
 			});
 
-			console.log(`Rooms in io: ${JSON.stringify(socket.adapter.rooms)}`);
+			// console.log(`Rooms in io: ${JSON.stringify(socket.adapter.rooms)}`);
 		});
         
 		socket.on('leave room', (data) => {
-			const { chat_id, user_email } = data[0];
+			const { chat_id, user_email } = data;
 
 			socket.leave(chat_id, () => {
 				const chatObject = getChatObject(chat_id);
@@ -53,29 +54,30 @@ module.exports = (io) => {
 
 		/*Socketio Chat Events*/
 		socket.on('send message', (data) => {
-			const { chat_id, message, user_email, date } = data[0];
+			const { chat_id, message, user_email, date } = data;
 			const chatObject = getChatObject(chat_id);
-			console.log(`Send message was emitted to ${JSON.stringify(data[0])}`);
+			console.log(`Send message was emitted to ${JSON.stringify(data)}`);
 
 			socket.in(chat_id).emit('send message', { event: 'send message', message, user_email, date });
 			chatObject.updateActivity();
 		});
 
 		socket.on('start typing', (data) => {
-			const { chat_id, user_email } = data[0];
+			console.log(`Started typing event received: ${JSON.stringify(data)}`);
+			const { chat_id, user_email } = data;
 			const chatObject = getChatObject(chat_id);
 			console.log(`${user_email} is typing`);
 
-			socket.in(chat_id).emit('start typing', { event: 'start typing' });
+			socket.in(chat_id).emit('start typing', { event: 'start typing', user_email });
 			chatObject.updateActivity();
 		});
 
 		socket.on('stop typing', (data) => {
-			const { chat_id, user_email } = data[0];
+			const { chat_id, user_email } = data;
 			const chatObject = getChatObject(chat_id);
 			console.log(`${user_email} stopped typing`);
 
-			socket.in(chat_id).emit('stop typing', { event: 'stop typing' });
+			socket.in(chat_id).emit('stop typing', { event: 'stop typing', user_email });
 			chatObject.updateActivity();
 		});
 		
