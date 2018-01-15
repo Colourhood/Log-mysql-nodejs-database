@@ -13,17 +13,17 @@
   "description": "A server for the Log-Messenger App",
   "dependencies": {
     "app-module-path": "^2.2.0",
-    "aws-sdk": "^2.132.0",
+    "aws-sdk": "^2.180.0",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
     "knex": "^0.13.0",
-    "moment": "^2.19.1",
-    "mysql": "^2.14.1",
-    "socket.io": "^2.0.3",
+    "moment": "^2.20.1",
+    "mysql": "^2.15.0",
+    "socket.io": "^2.0.4",
     "untildify": "^3.0.2"
   },
   "devDependencies": {
-    "eslint": "^4.10.0",
-    "pm2": "^2.7.1"
+    "eslint": "^4.15.0",
+    "pm2": "^2.9.1"
   }
 }
