@@ -2,7 +2,7 @@ const knex = require('knex')(require('knexfile'));
 const crypto = require('crypto');
 
 //private functions
-function saltHashPassword({ password, salt = randomString() } ) {
+function saltHashPassword({ password, salt = randomString() }) {
 	const hash = crypto.createHmac('sha512', salt).update(password);
 	return ({ 
 		salt,
